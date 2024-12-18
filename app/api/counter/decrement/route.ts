@@ -1,6 +1,8 @@
 import {decrementCounter} from "@/lib/api/counter";
 import {NextResponse} from "next/server";
 
+export const runtime = 'edge';
+
 export async function POST() {
     try {
         const counter = await decrementCounter();

@@ -1,10 +1,15 @@
+const { setupDevPlatform } = require('@cloudflare/next-on-pages/next-dev');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: { unoptimized: true },
+  // your config options here
 };
 
-module.exports = nextConfig;
+// Use async function wrapper for await
+async function configWrapper() {
+  await setupDevPlatform();
+  return nextConfig;
+}
+
+module.exports = configWrapper();
+

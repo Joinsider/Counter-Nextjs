@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getCounter, incrementCounter } from '@/lib/api/counter';
 
+
+export const runtime = 'edge';
+
 export async function GET() {
   try {
     const counter = await getCounter();
