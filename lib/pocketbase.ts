@@ -2,6 +2,8 @@ import PocketBase from 'pocketbase';
 
 export const pb = new PocketBase('https://ledschendlich.pockethost.io');
 
+pb.autoCancellation(false);
+
 export type Counter = {
   id: string;
   value: number;

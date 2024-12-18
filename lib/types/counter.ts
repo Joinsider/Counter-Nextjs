@@ -2,6 +2,7 @@
 export interface Counter {
   id: string;
   value: number;
+  date: string;
   created: string;
   updated: string;
 }
