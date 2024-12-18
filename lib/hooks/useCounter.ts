@@ -13,16 +13,17 @@ const fetcher = async (url: string): Promise<Counter> => {
 export function useCounter() {
   const [isLoading, setIsLoading] = useState(false);
   const { data, error, mutate } = useSWR<Counter>('/api/counter', fetcher, {
-    refreshInterval: 1000,
+    refreshInterval: 10000,
+    dedupingInterval: 0,
   });
 
   const increment = async () => {
     if (isLoading) return;
     
     setIsLoading(true);
-    console.log("INCREMENTING");
     try {
       const response = await fetch('/api/counter/increment', { method: 'POST' });
+
       if (!response.ok) {
         throw new Error('Failed to increment counter');
       }

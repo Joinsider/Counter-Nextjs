@@ -27,10 +27,10 @@ export async function getCounter(): Promise<Counter> {
 
 export async function getRecord(): Promise<any> {
     const today = format(new Date(), 'yyyy-MM-dd');
-    const records = await ((pb.collection('counter').getList(1, 50, {
-        filter: `date = "${today}"`
+    const records = await ((pb.collection(Collections.COUNTER).getList(1, 50, {
+        filter: `date = "${today}"`,
+        cache: "no-store",
     })));
-
     return records.items[0];
 }
 
@@ -50,7 +50,7 @@ export async function incrementCounter() {
         const counter = await getRecord();
         const value = counter.value += 1;
 
-        await pb.collection(Collections.COUNTER).update(counter.id, {
+        return await pb.collection(Collections.COUNTER).update(counter.id, {
             value,
         });
     } catch (error) {
@@ -64,7 +64,7 @@ export async function decrementCounter() {
         const counter = await getRecord();
         const value = counter.value -= 1;
 
-        await pb.collection(Collections.COUNTER).update(counter.id, {
+        return await pb.collection(Collections.COUNTER).update(counter.id, {
             value,
         });
     } catch (error) {

@@ -4,6 +4,9 @@ import { useCounter } from '@/lib/hooks/useCounter';
 import { CounterDisplay } from '@/components/ui/counter-display';
 import { CounterButton } from '@/components/ui/counter-button';
 import { APP_TITLE } from '@/lib/config';
+import {useEffect} from "react";
+
+export const dynamic = 'force-dynamic'
 
 export function Counter() {
   const { value, isLoading, error, increment, decrement } = useCounter();
