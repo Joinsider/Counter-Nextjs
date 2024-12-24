@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import useSWR from 'swr';
 import { Counter, CounterResponse } from '../types/counter';
+import {CounterType, pb} from "@/lib/pocketbase";
+import {Collections} from "@/lib/constants/collections";
 
-const COUNTER_ID = '3bqw5z4ht16sz75';
 const BASE_URL = '/api/counter';
 
 const fetcher = async (url: string): Promise<Counter> => {
@@ -13,10 +14,29 @@ const fetcher = async (url: string): Promise<Counter> => {
     return res.json();
 };
 
-export function useCounter() {
+export function useCounter(typeId: string) {
     const [isLoading, setIsLoading] = useState(false);
+    const [title, setTitle] = useState<string>('Title Loading...');
+
+    // Fetch counter type once
+    useEffect(() => {
+        const fetchCounterType = async () => {
+            try {
+                const type = await pb.collection(Collections.COUNTER_TYPE).getOne(typeId);
+                setTitle(type.title);
+            } catch (error) {
+                console.error('Error fetching counter type:', error);
+                setTitle('Unknown Counter');
+            }
+        };
+
+        if (typeId) {
+            fetchCounterType();
+        }
+    }, [typeId]);
+
     const { data, error, mutate } = useSWR<Counter>(
-        `${BASE_URL}/${COUNTER_ID}`,
+        `/api/counter/${typeId}`,
         fetcher,
         {
             refreshInterval: 10000,
@@ -39,7 +59,7 @@ export function useCounter() {
 
             // API call
             const response = await fetch(
-                `${BASE_URL}/${COUNTER_ID}/${action}`,
+                `${BASE_URL}/${typeId}/${action}`,
                 { method: 'POST' }
             );
 
@@ -61,8 +81,8 @@ export function useCounter() {
     return {
         value: data?.value ?? 0,
         date: data?.date,
-        type: data?.type,
-        title: data?.expand?.type?.title ?? '',
+        type: typeId,
+        title,
         isLoading,
         error: error?.message,
         increment: () => updateCounter('increment'),

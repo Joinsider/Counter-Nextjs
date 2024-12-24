@@ -9,12 +9,21 @@ import {PastCounters} from "@/components/past_counters";
 
 export const dynamic = 'force-dynamic'
 
-export function Counter() {
-    const { value, title, date, isLoading, error, increment, decrement } = useCounter();
+interface CounterProps {
+    typeId?: string;
+}
+
+export function Counter({ typeId }: CounterProps) {
+    if (!typeId) {
+        typeId = '3bqw5z4ht16sz75';
+    }
+
+    const { value, isLoading, error, increment, decrement, title, date } = useCounter(typeId);
+
 
     if (error) {
         return (
-            <div className="text-center text-red-500">
+            <div className="text-center text-red-500 dark:text-red-400">
                 {error}
             </div>
         );
@@ -71,7 +80,7 @@ export function Counter() {
                     disabled={isLoading}
                 />
             </div>
-            <PastCounters />
+            <PastCounters typeId={typeId}/>
         </div>
 
     );
