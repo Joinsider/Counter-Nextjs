@@ -4,17 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79c79806-719f-416e-a9c5-8627ad09b334" name="Changes" comment="Adds analytics for vercel">
-      <change afterPath="$PROJECT_DIR$/app/counter/[typeId]/page.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/components/SideMenu.tsx" afterDir="false" />
+    <list default="true" id="79c79806-719f-416e-a9c5-8627ad09b334" name="Changes" comment="Implements type selection and fixed sidemenu">
+      <change afterPath="$PROJECT_DIR$/components/Hamburger_icon.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/counter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/counter.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/past_counters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/past_counters.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/api/counter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/api/counter.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/hooks/useCounter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/hooks/useCounter.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/SideMenu.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/SideMenu.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +26,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="speedInsights" />
+        <entry key="$PROJECT_DIR$" value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -57,30 +51,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/johannes/WebstormProjects/ledschendlich&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.build.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.general&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\johannes\\dev\\projects\\web\\ledschendlich\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "type-selection",
+    "last_opened_file_path": "C:/Users/johannes/dev/projects/web/ledschendlich/app",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "npm",
+    "npm.build.executor": "Run",
+    "npm.dev.executor": "Run",
+    "settings.editor.selected.configurable": "preferences.general",
+    "ts.external.directory.path": "C:\\Users\\johannes\\dev\\projects\\web\\ledschendlich\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\johannes\dev\projects\web\ledschendlich\app" />
       <recent name="$PROJECT_DIR$" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\johannes\dev\projects\web\ledschendlich\components" />
       <recent name="$PROJECT_DIR$/src/app" />
     </key>
   </component>
@@ -129,7 +125,7 @@
       <updated>1733914842274</updated>
       <workItem from="1733914843323" duration="1596000" />
       <workItem from="1734508330789" duration="18656000" />
-      <workItem from="1735053035485" duration="3375000" />
+      <workItem from="1735053035485" duration="4634000" />
     </task>
     <task id="LOCAL-00001" summary="Not working">
       <option name="closed" value="true" />
@@ -171,7 +167,15 @@
       <option name="project" value="LOCAL" />
       <updated>1735042063884</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Implements type selection and fixed sidemenu">
+      <option name="closed" value="true" />
+      <created>1735057449208</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1735057449208</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -193,6 +197,7 @@
     <MESSAGE value="Working counter" />
     <MESSAGE value="implements the ledschendlich counter but with types added to the database" />
     <MESSAGE value="Adds analytics for vercel" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adds analytics for vercel" />
+    <MESSAGE value="Implements type selection and fixed sidemenu" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implements type selection and fixed sidemenu" />
   </component>
 </project>
