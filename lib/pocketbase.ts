@@ -4,12 +4,28 @@ export const pb = new PocketBase('https://ledschendlich.pockethost.io');
 
 pb.autoCancellation(false);
 
-export type Counter = {
+// Base type for common fields
+export type BaseModel = {
   id: string;
-  value: number;
-  date: string;
   created: string;
   updated: string;
 }
 
+// Counter Type model
+export type CounterType = BaseModel & {
+  title: string;
+}
+
+// Counter model with relation to CounterType
+export type Counter = BaseModel & {
+  value: number;
+  date: string;
+  type: string; // This holds the ID of the related counter_type
+  expand?: {
+    type?: CounterType; // For expanded relations
+  };
+}
+
+// Collection names as constants
 export const COUNTER_COLLECTION = 'counter';
+export const COUNTER_TYPE_COLLECTION = 'counter_type';

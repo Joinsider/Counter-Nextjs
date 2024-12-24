@@ -1,24 +1,22 @@
-import {Button} from './button';
-import {Loader2} from 'lucide-react';
-
 interface CounterButtonProps {
     onClick: () => void;
     isLoading: boolean;
     text: string;
+    disabled?: boolean;
 }
 
-export function CounterButton({onClick, isLoading, text}: CounterButtonProps) {
+export function CounterButton({ onClick, isLoading, text, disabled }: CounterButtonProps) {
     return (
-        <Button
+        <button
             onClick={onClick}
-            disabled={isLoading}
-            size="lg"
-            className="w-48"
+            disabled={disabled}
+            className={`px-4 py-2 rounded-md bg-purple-600 text-white 
+                hover:bg-purple-700 transition-colors duration-200
+                disabled:opacity-50 disabled:cursor-not-allowed
+                min-w-[120px]`}
         >
-            {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-2"/>
-            ) : null}
-            {text}
-        </Button>
+            {isLoading ? 'Loading...' : text}
+        </button>
     );
 }
+
