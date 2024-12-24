@@ -1,4 +1,5 @@
 import { Counter } from '@/components/counter';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function Home() {
   return (
@@ -6,6 +7,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto px-4 py-16">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 backdrop-blur-sm bg-opacity-90">
           <Counter />
+          <SpeedInsights />
         </div>
       </div>
     </main>
