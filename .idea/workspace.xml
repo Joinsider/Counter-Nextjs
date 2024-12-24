@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="79c79806-719f-416e-a9c5-8627ad09b334" name="Changes" comment="implements the ledschendlich counter but with types added to the database">
+    <list default="true" id="79c79806-719f-416e-a9c5-8627ad09b334" name="Changes" comment="Adds analytics for vercel">
+      <change afterPath="$PROJECT_DIR$/app/counter/[typeId]/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/components/SideMenu.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/layout.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/counter.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/counter.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/components/past_counters.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/past_counters.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/api/counter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/api/counter.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/hooks/useCounter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/hooks/useCounter.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +25,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -36,12 +43,12 @@
     &quot;assignee&quot;: &quot;Joinsider&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Joinsider/ledschendlich.git&quot;,
-    &quot;accountId&quot;: &quot;ee1cb6e0-6c64-427f-8036-69fca4b2ba65&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:Joinsider/ledschendlich.git",
+    "accountId": "f65998c2-ac5b-40d9-a188-d0634420d727"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -108,7 +115,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-WS-243.22562.112" />
+        <option value="bundled-js-predefined-d6986cc7102b-e768b9ed790e-JavaScript-WS-243.21565.180" />
       </set>
     </attachedChunks>
   </component>
@@ -122,6 +129,7 @@
       <updated>1733914842274</updated>
       <workItem from="1733914843323" duration="1596000" />
       <workItem from="1734508330789" duration="18656000" />
+      <workItem from="1735053035485" duration="3375000" />
     </task>
     <task id="LOCAL-00001" summary="Not working">
       <option name="closed" value="true" />
@@ -155,16 +163,36 @@
       <option name="project" value="LOCAL" />
       <updated>1735041466127</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Adds analytics for vercel">
+      <option name="closed" value="true" />
+      <created>1735042063884</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1735042063884</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Not working" />
     <MESSAGE value="Working counter" />
     <MESSAGE value="implements the ledschendlich counter but with types added to the database" />
-    <option name="LAST_COMMIT_MESSAGE" value="implements the ledschendlich counter but with types added to the database" />
+    <MESSAGE value="Adds analytics for vercel" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adds analytics for vercel" />
   </component>
 </project>

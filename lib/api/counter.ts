@@ -26,10 +26,10 @@ export async function getCounter(id: string, extend: boolean): Promise<Counter> 
     }
 }
 
-export async function getRecord(id: string): Promise<Counter | null> {
+export async function getRecord(typeId: string): Promise<Counter | null> {
     const today = format(new Date(), 'yyyy-MM-dd');
     const records = await pb.collection(Collections.COUNTER).getList<Counter>(1, 50, {
-        filter: `date = "${today}" && type = "${id}"`,
+        filter: `date = "${today}" && type = "${typeId}"`,
         expand: 'type',
         cache: "no-store",
     });

@@ -6,9 +6,16 @@ import { pb } from '@/lib/pocketbase';
 import {Counter} from "@/lib/types/counter";
 
 
-const COUNTER_TYPE_ID = '3bqw5z4ht16sz75';
+interface CounterProps {
+    typeId?: string;
+}
 
-export function PastCounters() {
+export function PastCounters({ typeId }: CounterProps) {
+
+    if (!typeId) {
+        typeId = '3bqw5z4ht16sz75';
+    }
+
     const [pastCounters, setPastCounters] = useState<Counter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -17,7 +24,7 @@ export function PastCounters() {
             try {
                 const today = new Date().toISOString().split('T')[0];
                 const records = await pb.collection('counter').getList<Counter>(1, 50, {
-                    filter: `type = "${COUNTER_TYPE_ID}" && date != "${today}"`,
+                    filter: `type = "${typeId}" && date != "${today}"`,
                     sort: '-date',
                     expand: 'type'
                 });
@@ -43,7 +50,7 @@ export function PastCounters() {
                 {pastCounters.map((counter) => (
                     <div
                         key={counter.id}
-                        className="p-4 bg-gray-50 rounded-lg shadow-sm"
+                        className="p-4 bg-gray-50 rounded-lg shadow-sm dark:bg-gray-800 dark:text-gray-200"
                     >
                         <div className="flex justify-between items-center">
                             <div className="text-lg font-medium">
