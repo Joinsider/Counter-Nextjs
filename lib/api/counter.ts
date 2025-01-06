@@ -40,7 +40,7 @@ export async function getRecord(typeId: string): Promise<Counter | null> {
 export async function createCounter(typeId: string): Promise<Counter> {
     return pb.collection(Collections.COUNTER)
         .create<Counter>({
-            value: 1,
+            value: 0,
             date: format(new Date(), 'yyyy-MM-dd'),
             type: typeId,
         });

@@ -28,7 +28,15 @@ export function PastCounters({ typeId }: CounterProps) {
                     sort: '-date',
                     expand: 'type'
                 });
-                setPastCounters(records.items);
+
+                const nonZeroCounters = records.items.filter(counter => counter.value !== 0);
+                setPastCounters(nonZeroCounters);
+
+                // Remove counters with value 0 from the database
+                const zeroValueCounters = records.items.filter(counter => counter.value === 0);
+                for (const counter of zeroValueCounters) {
+                    await pb.collection('counter').delete(counter.id);
+                }
             } catch (error) {
                 console.error('Error fetching past counters:', error);
             } finally {
