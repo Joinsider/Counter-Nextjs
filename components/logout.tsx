@@ -13,7 +13,7 @@ export function LogoutNav() {
 
             const loggedIn = await pb.authStore.isValid;
             if(!loggedIn) {
-                router.replace('/auth/login');
+                router.replace('/');
             }
         }
 
