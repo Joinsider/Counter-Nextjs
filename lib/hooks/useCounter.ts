@@ -1,90 +1,104 @@
 import {useEffect, useState} from 'react';
-import useSWR from 'swr';
-import { Counter, CounterResponse } from '../types/counter';
-import {CounterType, pb} from "@/lib/pocketbase";
+import {Counter} from '../types/counter';
+import {pb} from "@/lib/pocketbase";
 import {Collections} from "@/lib/constants/collections";
 
-const BASE_URL = '/api/counter';
-
-const fetcher = async (url: string): Promise<Counter> => {
-    const res = await fetch(`${url}?expand=type`);
-    if (!res.ok) {
-        throw new Error(`Failed to fetch counter: ${res.statusText}`);
-    }
-    return res.json();
-};
-
 export function useCounter(typeId: string) {
-    const [isLoading, setIsLoading] = useState(false);
+    const [counter, setCounter] = useState<Counter | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [title, setTitle] = useState<string>('Title Loading...');
 
-    // Fetch counter type once
     useEffect(() => {
-        const fetchCounterType = async () => {
+        // Fetch initial counter data and subscribe to changes
+        const fetchCounter = async () => {
             try {
                 const type = await pb.collection(Collections.COUNTER_TYPE).getOne(typeId);
                 setTitle(type.title);
-            } catch (error) {
-                console.error('Error fetching counter type:', error);
-                setTitle('Unknown Counter');
+
+                const today = new Date().toISOString().split('T')[0];
+                const records = await pb.collection(Collections.COUNTER).getList(1, 1, {
+                    filter: `date = "${today}" && type = "${typeId}"`,
+                    expand: 'type'
+                });
+
+                if (records.items.length > 0) {
+                    const counter: Counter = {
+                        id: records.items[0].id,
+                        value: records.items[0].value,
+                        date: records.items[0].date,
+                        type: records.items[0].type,
+                        created: records.items[0].created,
+                        updated: records.items[0].updated,
+                    }
+                    setCounter(counter);
+                } else {
+                    // Create new counter if none exists for today
+                    const newCounter = await pb.collection(Collections.COUNTER).create({
+                        value: 0,
+                        date: today,
+                        type: typeId,
+                    });
+                    const counter: Counter = {
+                        id: newCounter.id,
+                        value: newCounter.value,
+                        date: newCounter.date,
+                        type: newCounter.type,
+                        created: newCounter.created,
+                        updated: newCounter.updated,
+                    }
+                    setCounter(counter);
+                }
+                setIsLoading(false);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to fetch counter');
+                setIsLoading(false);
             }
         };
 
-        if (typeId) {
-            fetchCounterType();
-        }
+        fetchCounter();
+
+        // Subscribe to real-time updates
+        const subscription = pb.collection(Collections.COUNTER).subscribe('*', async ({record}) => {
+            if (record.type === typeId) {
+                const counter: Counter = {
+                    id: record.id,
+                    value: record.value,
+                    date: record.date,
+                    type: record.type,
+                    created: record.created,
+                    updated: record.updated,
+                }
+                setCounter(counter);
+            }
+        });
+
+        // Cleanup subscription
+        return () => {
+            pb.collection(Collections.COUNTER).unsubscribe();
+        };
     }, [typeId]);
 
-    const { data, error, mutate } = useSWR<Counter>(
-        `/api/counter/${typeId}`,
-        fetcher,
-        {
-            refreshInterval: 10000,
-            dedupingInterval: 0,
-        }
-    );
-
     const updateCounter = async (action: 'increment' | 'decrement'): Promise<void> => {
-        if (isLoading || !data) return;
+        if (isLoading || !counter) return;
 
-        const optimisticData: Counter = {
-            ...data,
-            value: action === 'increment' ? data.value + 1 : data.value - 1
-        };
-
-        setIsLoading(true);
         try {
-            // Optimistic update
-            await mutate(optimisticData, false);
-
-            // API call
-            const response = await fetch(
-                `${BASE_URL}/${typeId}/${action}`,
-                { method: 'POST' }
-            );
-
-            if (!response.ok) {
-                throw new Error(`Failed to ${action} counter`);
-            }
-
-            const result: Counter = await response.json();
-            await mutate(result, false);
-        } catch (error) {
-            // Rollback on error
-            await mutate(data, false);
-            console.error(`Error ${action}ing counter:`, error);
-        } finally {
-            setIsLoading(false);
+            const newValue = action === 'increment' ? counter.value + 1 : counter.value - 1;
+            await pb.collection(Collections.COUNTER).update(counter.id, {
+                value: newValue
+            });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to update counter');
         }
     };
 
     return {
-        value: data?.value ?? 0,
-        date: data?.date,
+        value: counter?.value ?? 0,
+        date: counter?.date,
         type: typeId,
         title,
         isLoading,
-        error: error?.message,
+        error,
         increment: () => updateCounter('increment'),
         decrement: () => updateCounter('decrement'),
     };
