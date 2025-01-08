@@ -1,6 +1,8 @@
 import PocketBase from 'pocketbase';
 
-export const pb = new PocketBase('https://ledschendlich.pockethost.io');
+const server = process.env.POCKETBASE_SERVER || 'https://ledschendlich.pockethost.io';
+
+export const pb = new PocketBase(server);
 
 pb.autoCancellation(false);
 
