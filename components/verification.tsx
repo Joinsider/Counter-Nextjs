@@ -23,7 +23,7 @@ export function VerificationNav() {
                 const isVerified = pb.authStore.model.verified;
 
                 if (isVerified) {
-                    router.push('/');
+                    router.push('/counter/');
                     return;
                 }
 
@@ -31,7 +31,6 @@ export function VerificationNav() {
                 if (mounted && !isSent) {
                     await pb.collection('users').requestVerification(pb.authStore.model.email);
                     setIsSent(true);
-                    setTimeout(() => router.push('/'), 3000);
                 }
             } catch (error) {
                 console.error('Auth check failed:', error);

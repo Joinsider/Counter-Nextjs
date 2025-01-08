@@ -43,11 +43,6 @@ export default function AuthForm({ mode }: AuthFormProps) {
                         username: formData.username,
                     });
                     await pb.collection('users').authWithPassword(formData.email, formData.password);
-
-                    const verified = pb.authStore.model?.verified;
-                    if(verified === false){
-                        router.replace('/auth/verification');
-                    }
                 } else {
                     setIsError(true);
                     const error = "Email must be a i24... e-mail";
@@ -61,7 +56,12 @@ export default function AuthForm({ mode }: AuthFormProps) {
                 description: 'Welcome to Counter App!',
             });
 
-            router.replace('/auth/verification');
+            const verified = pb.authStore.model?.verified;
+            if(verified === false) {
+                router.replace('/auth/verification');
+            } else {
+                router.replace('/counter/');
+            }
         } catch (error) {
             toast({
                 title: 'Error',
