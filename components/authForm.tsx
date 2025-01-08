@@ -45,8 +45,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
                     await pb.collection('users').authWithPassword(formData.email, formData.password);
 
                     const verified = pb.authStore.model?.verified;
-                    if(verified === false){
+                    if(verified === false) {
                         router.replace('/auth/verification');
+                    } else {
+                        router.replace('/counter/');
                     }
                 } else {
                     setIsError(true);

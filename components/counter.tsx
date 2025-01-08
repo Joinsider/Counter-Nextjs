@@ -1,10 +1,10 @@
 'use client';
 
-import { useCounter } from '@/lib/hooks/useCounter';
-import { CounterDisplay } from '@/components/ui/counter-display';
-import { CounterButton } from '@/components/ui/counter-button';
-import { APP_TITLE } from '@/lib/config';
-import React, {useEffect} from "react";
+import {useCounter} from '@/lib/hooks/useCounter';
+import {CounterDisplay} from '@/components/ui/counter-display';
+import {CounterButton} from '@/components/ui/counter-button';
+import {APP_TITLE} from '@/lib/config';
+import React, {useEffect, useState} from "react";
 import {PastCounters} from "@/components/past_counters";
 import {pb} from "@/lib/pocketbase";
 import {useRouter} from "next/navigation";
@@ -15,13 +15,13 @@ interface CounterProps {
     typeId?: string;
 }
 
-export function Counter({ typeId }: CounterProps) {
+export function Counter({typeId}: CounterProps) {
     const router = useRouter();
     if (!typeId) {
         typeId = '3bqw5z4ht16sz75';
     }
 
-    const { value, isLoading, error, increment, decrement, title, date } = useCounter(typeId);
+    const {value, isLoading, error, increment, decrement, title, date} = useCounter(typeId);
 
 
     if (error) {
@@ -48,11 +48,21 @@ export function Counter({ typeId }: CounterProps) {
         }
     };
 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     useEffect(() => {
         const checkAuthState = async () => {
             try {
-                if(!pb.authStore.isValid) {
-                    router.replace('/auth/login');
+                const valid = await pb.authStore.isValid;
+                const verified = pb.authStore.model?.verified;
+                if (valid) {
+                    if(verified){
+                        setIsLoggedIn(true);
+                    }else {
+                        router.replace('/auth/verification');
+                    }
+                } else {
+                    setIsLoggedIn(false);
                 }
             } catch (error) {
                 console.error('Auth check failed:', error);
@@ -75,7 +85,7 @@ export function Counter({ typeId }: CounterProps) {
             )}
 
             <div className="flex flex-col items-center space-y-2">
-                <CounterDisplay value={value} />
+                <CounterDisplay value={value}/>
                 {date && (
                     <span className="text-sm text-gray-500">
                         {date}
@@ -83,20 +93,24 @@ export function Counter({ typeId }: CounterProps) {
                 )}
             </div>
 
-            <div className="flex flex-col space-y-3">
-                <CounterButton
-                    onClick={handleIncrement}
-                    isLoading={isLoading}
-                    text="Increment"
-                    disabled={isLoading}
-                />
-                <CounterButton
-                    onClick={handleDecrement}
-                    isLoading={isLoading}
-                    text="Decrement"
-                    disabled={isLoading}
-                />
-            </div>
+            {isLoggedIn ? (
+                <div className="flex flex-col space-y-3">
+                    <CounterButton
+                        onClick={handleIncrement}
+                        isLoading={isLoading}
+                        text="Increment"
+                        disabled={isLoading}
+                    />
+                    <CounterButton
+                        onClick={handleDecrement}
+                        isLoading={isLoading}
+                        text="Decrement"
+                        disabled={isLoading}
+                    />
+                </div>
+            ) : (
+                <div>Login to edit the counter</div>
+            ) }
             <PastCounters typeId={typeId}/>
         </div>
 
