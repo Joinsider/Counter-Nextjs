@@ -23,7 +23,7 @@ export function VerificationNav() {
                 const isVerified = pb.authStore.model.verified;
 
                 if (isVerified) {
-                    router.push('/');
+                    router.push('/counter/');
                     return;
                 }
 
