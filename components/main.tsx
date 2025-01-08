@@ -1,20 +1,9 @@
 'use client';
 
-import {useEffect} from "react";
-import {pb} from "@/lib/pocketbase";
-import {useRouter} from "next/navigation";
+import Link from "next/link";
+import {Button} from "@/components/ui/button";
 
 export default function Main() {
-    const router = useRouter();
-
-
-    useEffect(() => {
-        const loggedIn = pb.authStore.isValid;
-
-        if(loggedIn) {
-            router.replace('/counter');
-        }
-    }, []);
 
     return (
         <div className="flex items-center justify-center min-h-screen flex-col">
@@ -25,6 +14,11 @@ export default function Main() {
             <p>
                 Please login using your i24 e-mail address.
             </p>
+            <Link href="/counter/">
+                <Button variant="outline" className="bg-white dark:bg-gray-800">
+                    Go to the counters
+                </Button>
+            </Link>
         </div>
     )
 }
