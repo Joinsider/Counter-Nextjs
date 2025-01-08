@@ -4,8 +4,10 @@ import { useCounter } from '@/lib/hooks/useCounter';
 import { CounterDisplay } from '@/components/ui/counter-display';
 import { CounterButton } from '@/components/ui/counter-button';
 import { APP_TITLE } from '@/lib/config';
-import React from "react";
+import React, {useEffect} from "react";
 import {PastCounters} from "@/components/past_counters";
+import {pb} from "@/lib/pocketbase";
+import {useRouter} from "next/navigation";
 
 export const dynamic = 'force-dynamic'
 
@@ -14,6 +16,7 @@ interface CounterProps {
 }
 
 export function Counter({ typeId }: CounterProps) {
+    const router = useRouter();
     if (!typeId) {
         typeId = '3bqw5z4ht16sz75';
     }
@@ -44,6 +47,20 @@ export function Counter({ typeId }: CounterProps) {
             console.error('Failed to decrement:', error);
         }
     };
+
+    useEffect(() => {
+        const checkAuthState = async () => {
+            try {
+                if(!pb.authStore.isValid) {
+                    router.replace('/auth/login');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        };
+
+        checkAuthState();
+    }, []); // Empty dependency array
 
     return (
         <div className="flex flex-col items-center space-y-6">
