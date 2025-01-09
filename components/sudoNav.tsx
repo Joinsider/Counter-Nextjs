@@ -26,7 +26,7 @@ export default function SudoNav() {
                 isSudo ? (
                     <div className="">
                         <Link href={"/counter/add"}>
-                            <Button variant="outline" className="bg-white dark:bg-gray-800">
+                            <Button variant="outline" className="bg-white dark:bg-gray-700">
                                 Add Counter
                             </Button>
                         </Link>

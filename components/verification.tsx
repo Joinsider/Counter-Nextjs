@@ -20,9 +20,12 @@ export function VerificationNav() {
                     return;
                 }
 
-                const isVerified = pb.authStore.model.verified;
+                const model = await pb.collection('users').getOne(pb.authStore.model.id);
+
+                const isVerified = model?.verified;
 
                 if (isVerified) {
+                    await pb.collection('users').authRefresh();
                     router.push('/counter/');
                     return;
                 }
@@ -49,7 +52,7 @@ export function VerificationNav() {
     <div className="flex min-h-screen items-center justify-center flex-col bg-gray-100 dark:bg-gray-900 p-4">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md text-center">
             <h1 className="text-2xl font-bold mb-4">
-                {isSent ? "Verification Email Sent" : "Sending Verification Email"}
+                {isSent ? "Verification Email Sent" : "Checking E-Mail Verification Status"}
             </h1>
             {isSent && (
                 <Link href="/" className="text-blue-600 hover:underline dark:text-blue-400">

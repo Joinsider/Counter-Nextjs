@@ -53,18 +53,18 @@ export function PastCounters({ typeId }: CounterProps) {
 
     return (
         <div className="mt-12">
-            <h2 className="text-2xl font-semibold text-gray-700 mb-4">Past Counters</h2>
+            <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">Past Counters</h2>
             <div className="space-y-4">
                 {pastCounters.map((counter) => (
                     <div
                         key={counter.id}
-                        className="p-4 bg-gray-50 rounded-lg shadow-sm dark:bg-gray-800 dark:text-gray-200"
+                        className="p-4 bg-gray-50 rounded-lg shadow-sm dark:bg-gray-600 dark:text-gray-200"
                     >
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center ">
                             <div className="text-lg font-medium">
                                 Value: {counter.value}
                             </div>
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm p-1 text-gray-500 dark:text-gray-400">
                                 {counter.date}
                             </div>
                         </div>

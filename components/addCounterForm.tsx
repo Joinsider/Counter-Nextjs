@@ -76,13 +76,13 @@ export default function AddCounterForm() {
             <div className="w-full max-w-md">
                 {isLoggedIn ? (
                     <div className="rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
-                        <h2 className="mb-6 text-2xl font-bold text-center">
+                        <h2 className="mb-6 text-2xl font-bold text-center ">
                             Add Counter
                         </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block mb-2 text-sm font-medium">Title</label>
+                                <label className="block mb-2 text-sm font-medium dark:text-white">Title</label>
                                 <Input
                                     type="text"
                                     name="title"
@@ -102,7 +102,7 @@ export default function AddCounterForm() {
                         </form>
                     </div>
                 ) : (
-                    <div>Sorry you don't have enough rights to do this</div>
+                    <div className="dark:text-white">Sorry you don't have enough rights to do this</div>
                 )}
 
             </div>
