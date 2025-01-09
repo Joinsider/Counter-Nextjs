@@ -34,7 +34,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             if (mode === 'login') {
                  await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
-                const regex = /^i24\d{3}@hb\.dhbw-stuttgart\.de$/;
+                const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
                 if(regex.test(formData.email)){
                     await pb.collection('users').create({
                         email: formData.email,
