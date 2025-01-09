@@ -17,7 +17,7 @@ export default function Main() {
                 Please login using your i24 e-mail address.
             </p>
             <Link href="/counter/">
-                <Button variant="outline" className="bg-white dark:bg-gray-800">
+                <Button variant="outline" className="bg-white dark:bg-gray-600">
                     Go to the counters
                 </Button>
             </Link>

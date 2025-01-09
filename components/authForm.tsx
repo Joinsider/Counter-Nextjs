@@ -83,7 +83,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
     return (
         <div className="flex min-h-screen items-center justify-center">
             <div className="w-full max-w-md">
-                <div className="rounded-lg bg-white p-8 shadow-md dark:bg-gray-800">
+                <div className="rounded-lg bg-white p-8 shadow-md dark:bg-zinc-800">
                     <h2 className="mb-6 text-2xl font-bold text-center">
                         {mode === 'login' ? 'Sign In' : 'Sign Up'}
                     </h2>
@@ -120,6 +120,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                                 name="password"
                                 value={formData.password}
                                 min={8}
+                                minLength={8}
                                 onChange={handleChange}
                                 required
                             />
@@ -127,7 +128,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                         <div>
                             {isError && (
                                 <div className="text-red-500 dark:text-red-400">
-                                    Email must be a DHBW Stuttgart Campus Horb Email and Password must be at least 8 characters long
+                                    Email must be a i24xxx Email and Password must be at least 8 characters long
                                     {error}
                                 </div>
                             )}

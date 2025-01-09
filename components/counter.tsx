@@ -79,7 +79,7 @@ export function Counter({typeId}: CounterProps) {
             </h1>
 
             {title && (
-                <h2 className="text-2xl font-semibold text-gray-700">
+                <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-500">
                     {title}
                 </h2>
             )}

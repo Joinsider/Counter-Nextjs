@@ -36,7 +36,7 @@ export function SideMenu() {
             {/* Toggle Button - Fixed Position */}
             <button
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className={isCollapsed ? "fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors size-2 shadow-lg" : "fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-200 dark:bg-gray-700hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors size-2"}
+                className={isCollapsed ? "fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-300 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors size-2 shadow-lg" : "fixed top-4 left-4 z-50 p-2 rounded-lg hover:bg-gray-200 bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 transition-colors size-2"}
                 aria-label={isCollapsed ? 'Expand menu' : 'Collapse menu'}>
                 <span className="w-6 h-6 font-bold">&#9776;</span> {isCollapsed ? 'View Counters' : 'Close'}
             </button>
