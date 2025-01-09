@@ -20,7 +20,7 @@ export function ThemeSwitcher() {
             <Button
                 variant="outline"
                 size="icon"
-                className="bg-white dark:bg-gray-800"
+                className="bg-white dark:bg-gray-700"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
                 {theme === "dark" ? (
