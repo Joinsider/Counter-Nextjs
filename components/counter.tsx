@@ -8,6 +8,7 @@ import React, {useEffect, useState} from "react";
 import {PastCounters} from "@/components/past_counters";
 import {pb} from "@/lib/pocketbase";
 import {useRouter} from "next/navigation";
+import LoadCounterStats from "@/components/loadCounterStats";
 
 export const dynamic = 'force-dynamic'
 
@@ -56,9 +57,9 @@ export function Counter({typeId}: CounterProps) {
                 const valid = await pb.authStore.isValid;
                 const verified = pb.authStore.model?.verified;
                 if (valid) {
-                    if(verified){
+                    if (verified) {
                         setIsLoggedIn(true);
-                    }else {
+                    } else {
                         router.replace('/auth/verification');
                     }
                 } else {
@@ -73,46 +74,48 @@ export function Counter({typeId}: CounterProps) {
     }, []); // Empty dependency array
 
     return (
-        <div className="flex flex-col items-center space-y-6">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                {APP_TITLE}
-            </h1>
+        <div className="flex flex-col space-y-4">
+            <div className="flex flex-col items-center space-y-6">
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    {APP_TITLE}
+                </h1>
 
-            {title && (
-                <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-500">
-                    {title}
-                </h2>
-            )}
+                {title && (
+                    <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-500">
+                        {title}
+                    </h2>
+                )}
 
-            <div className="flex flex-col items-center space-y-2">
-                <CounterDisplay value={value}/>
-                {date && (
-                    <span className="text-sm text-gray-500">
+                <div className="flex flex-col items-center space-y-2">
+                    <CounterDisplay value={value}/>
+                    {date && (
+                        <span className="text-sm text-gray-500">
                         {date}
                     </span>
-                )}
-            </div>
-
-            {isLoggedIn ? (
-                <div className="flex flex-col space-y-3">
-                    <CounterButton
-                        onClick={handleIncrement}
-                        isLoading={isLoading}
-                        text="Increment"
-                        disabled={isLoading}
-                    />
-                    <CounterButton
-                        onClick={handleDecrement}
-                        isLoading={isLoading}
-                        text="Decrement"
-                        disabled={isLoading}
-                    />
+                    )}
                 </div>
-            ) : (
-                <div>Login to edit the counter</div>
-            ) }
-            <PastCounters typeId={typeId}/>
-        </div>
 
+                {isLoggedIn ? (
+                    <div className="flex flex-col space-y-3">
+                        <CounterButton
+                            onClick={handleIncrement}
+                            isLoading={isLoading}
+                            text="Increment"
+                            disabled={isLoading}
+                        />
+                        <CounterButton
+                            onClick={handleDecrement}
+                            isLoading={isLoading}
+                            text="Decrement"
+                            disabled={isLoading}
+                        />
+                    </div>
+                ) : (
+                    <div>Login to edit the counter</div>
+                )}
+                <PastCounters typeId={typeId}/>
+            </div>
+            <LoadCounterStats typeId={typeId}/>
+        </div>
     );
 }
