@@ -1,27 +1,29 @@
 'use client';
 
 import React, {useRef, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {useParams, useRouter} from 'next/navigation';
 import {pb} from '@/lib/pocketbase';
 import Link from 'next/link';
 import {Button} from './ui/button';
 import {Input} from './ui/input';
 import {useToast} from '@/hooks/use-toast';
-import ReCAPTCHA from 'react-google-recaptcha';
-
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface AuthFormProps {
-    mode: 'login' | 'signup';
+    mode: 'request' | 'reset';
+    token?: string;
 }
 
-export default function AuthForm({mode}: AuthFormProps) {
+export default function ResetForm({mode, token}: AuthFormProps) {
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        username: '',
+        repeatPassword: '',
     });
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
+    const [isSent, setIsSent] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
     const {toast} = useToast();
@@ -71,37 +73,34 @@ export default function AuthForm({mode}: AuthFormProps) {
         }
 
         try {
-            if (mode === 'login') {
-                await pb.collection('users').authWithPassword(formData.email, formData.password);
-            } else {
+            if (mode === 'request') {
                 const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
                 if (regex.test(formData.email)) {
-                    await pb.collection('users').create({
-                        email: formData.email,
-                        password: formData.password,
-                        passwordConfirm: formData.password,
-                        username: formData.username,
-                    });
-                    await pb.collection('users').authWithPassword(formData.email, formData.password);
+                    await pb.collection('users').requestPasswordReset(formData.email);
                 } else {
                     setIsError(true);
                     const error = "Email must be a i24... e-mail";
                     setError(error);
                     throw new Error(error);
                 }
+                router.replace('/auth/logout');
+            } else if (mode === 'reset' && formData.password === formData.repeatPassword && token !== undefined) {
+                await pb.collection('users').confirmPasswordReset(token, formData.password, formData.repeatPassword);
+
+                const verified = pb.authStore.model?.verified;
+                if (verified === false) {
+                    router.replace('/auth/verification');
+                } else {
+                    router.replace('/counter/');
+                }
             }
 
             toast({
-                title: mode === 'login' ? 'Logged in successfully' : 'Account created successfully',
+                title: mode === 'request' ? 'Password reset mail was sent' : 'Password reset was successful',
                 description: 'Welcome to Counter App!',
             });
 
-            const verified = pb.authStore.model?.verified;
-            if (verified === false) {
-                router.replace('/auth/verification');
-            } else {
-                router.replace('/counter/');
-            }
+
         } catch (error) {
             toast({
                 title: 'Error',
@@ -129,46 +128,50 @@ export default function AuthForm({mode}: AuthFormProps) {
             <div className="w-full max-w-md">
                 <div className="rounded-lg bg-white p-8 shadow-md dark:bg-zinc-800">
                     <h2 className="mb-6 text-2xl font-bold text-center">
-                        {mode === 'login' ? 'Sign In' : 'Sign Up'}
+                        {mode === 'request' ? 'Request password reset' : 'Reset Password'}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        {mode === 'signup' && (
+                        {mode === 'request' && (
                             <div>
-                                <label className="block mb-2 text-sm font-medium">Username</label>
+                                <label className="block mb-2 text-sm font-medium">Email</label>
                                 <Input
-                                    type="text"
-                                    name="username"
-                                    value={formData.username}
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
                                     onChange={handleChange}
                                     required
                                 />
                             </div>
                         )}
-
-                        <div>
-                            <label className="block mb-2 text-sm font-medium">Email</label>
-                            <Input
-                                type="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block mb-2 text-sm font-medium">Password</label>
-                            <Input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                min={8}
-                                minLength={8}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
+                        {mode === 'reset' && (
+                            <div>
+                                <div>
+                                    <label className="block mb-2 text-sm font-medium">Password</label>
+                                    <Input
+                                        type="password"
+                                        name="password"
+                                        value={formData.password}
+                                        min={8}
+                                        minLength={8}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block mb-2 text-sm font-medium">Password</label>
+                                    <Input
+                                        type="password"
+                                        name="repeatPassword"
+                                        value={formData.repeatPassword}
+                                        min={8}
+                                        minLength={8}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        )}
                         <div>
                             {isError && (
                                 <div className="text-red-500 dark:text-red-400">
@@ -181,39 +184,29 @@ export default function AuthForm({mode}: AuthFormProps) {
                             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
                             ref={recaptchaRef}
                             onChange={handleChange}
-                            onExpired={handleExpired}
-                        />
+                            onExpired={handleExpired} />
 
                         <Button
                             type="submit"
                             className="w-full"
                             disabled={isLoading}
                         >
-                            {isLoading ? 'Loading...' : mode === 'login' ? 'Sign In' : 'Sign Up'}
+                            {isLoading ? 'Loading...' : mode === 'request' ? 'Request Reset Email' : 'Reset Password'}
                         </Button>
                     </form>
 
-                    <div className="mt-4 text-center flex flex-col">
-                        <Link
-                            href={mode === 'login' ? '/auth/signup' : '/auth/login'}
-                            className="text-blue-600 hover:underline dark:text-blue-400"
-                        >
-                            {mode === 'login'
-                                ? "Need an account? Sign up"
-                                : "Already have an account? Sign in"}
-                        </Link>
-                        {mode === 'login' && (
+                    {mode === 'request' && (
+                        <div className="mt-4 text-center">
                             <Link
-                                href="/auth/reset"
-                                className="text-blue-600 hover:underline dark:text-blue-400"
-                            >
-                                Forgot Password
+                                href="/auth/login"
+                                className="text-blue-600 hover:underline dark:text-blue-400">
+                                Login
                             </Link>
-                        )}
-                    </div>
-
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
-    );
+    )
+        ;
 }
