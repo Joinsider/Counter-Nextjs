@@ -1,12 +1,13 @@
 'use client';
 
-import {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {useParams, useRouter} from 'next/navigation';
 import {pb} from '@/lib/pocketbase';
 import Link from 'next/link';
 import {Button} from './ui/button';
 import {Input} from './ui/input';
 import {useToast} from '@/hooks/use-toast';
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface AuthFormProps {
     mode: 'request' | 'reset';
@@ -27,11 +28,49 @@ export default function ResetForm({mode, token}: AuthFormProps) {
     const router = useRouter();
     const {toast} = useToast();
 
+    const recaptchaRef = useRef<ReCAPTCHA>(null);
+    const [isVerified, setIsVerified] = useState(false);
+
+    async function handleCaptchaSubmission(token: string | null) {
+        try {
+            if (token) {
+                await fetch("/api", {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({token}),
+                });
+                setIsVerified(true);
+            }
+        } catch (e) {
+            setIsVerified(false);
+        }
+    }
+
+    function handleExpired() {
+        setIsVerified(false);
+    }
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
         setIsError(false);
         setError("");
+
+        if(!isVerified) {
+            setIsError(true);
+            const error = "Please verify the captcha";
+            setError(error);
+            toast({
+                title: 'Error',
+                description: error,
+                variant: 'destructive',
+            });
+            setIsLoading(false);
+            return;
+        }
 
         try {
             if (mode === 'request') {
@@ -73,11 +112,15 @@ export default function ResetForm({mode, token}: AuthFormProps) {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string | null) => {
+        if (typeof e === 'string' || e === null) {
+            handleCaptchaSubmission(e);
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [e.target.name]: e.target.value
+            }));
+        }
     };
 
     return (
@@ -137,6 +180,12 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                             )}
                         </div>
 
+                        <ReCAPTCHA
+                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                            ref={recaptchaRef}
+                            onChange={handleChange}
+                            onExpired={handleExpired} />
+
                         <Button
                             type="submit"
                             className="w-full"
@@ -145,6 +194,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                             {isLoading ? 'Loading...' : mode === 'request' ? 'Request Reset Email' : 'Reset Password'}
                         </Button>
                     </form>
+
                     {mode === 'request' && (
                         <div className="mt-4 text-center">
                             <Link
@@ -153,7 +203,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                                 Login
                             </Link>
                         </div>
-                    )};
+                    )}
                 </div>
             </div>
         </div>
