@@ -211,6 +211,7 @@ export default function AuthForm({mode}: AuthFormProps) {
                             </Link>
                         )}
                     </div>
+
                 </div>
             </div>
         </div>
