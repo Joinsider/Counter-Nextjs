@@ -1,18 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { pb } from '@/lib/pocketbase';
+import React, {useRef, useState} from 'react';
+import {useRouter} from 'next/navigation';
+import {pb} from '@/lib/pocketbase';
 import Link from 'next/link';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { useToast } from '@/hooks/use-toast';
+import {Button} from './ui/button';
+import {Input} from './ui/input';
+import {useToast} from '@/hooks/use-toast';
+import ReCAPTCHA from 'react-google-recaptcha';
+
 
 interface AuthFormProps {
     mode: 'login' | 'signup';
 }
 
-export default function AuthForm({ mode }: AuthFormProps) {
+export default function AuthForm({mode}: AuthFormProps) {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -22,7 +24,32 @@ export default function AuthForm({ mode }: AuthFormProps) {
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
-    const { toast } = useToast();
+    const {toast} = useToast();
+
+    const recaptchaRef = useRef<ReCAPTCHA>(null);
+    const [isVerified, setIsVerified] = useState(false);
+
+    async function handleCaptchaSubmission(token: string | null) {
+        try {
+            if (token) {
+                await fetch("/api", {
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({token}),
+                });
+                setIsVerified(true);
+            }
+        } catch (e) {
+            setIsVerified(false);
+        }
+    }
+
+    function handleExpired() {
+        setIsVerified(false);
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,12 +57,25 @@ export default function AuthForm({ mode }: AuthFormProps) {
         setIsError(false);
         setError("");
 
+        if(!isVerified) {
+            setIsError(true);
+            const error = "Please verify the captcha";
+            setError(error);
+            toast({
+                title: 'Error',
+                description: error,
+                variant: 'destructive',
+            });
+            setIsLoading(false);
+            return;
+        }
+
         try {
             if (mode === 'login') {
-                 await pb.collection('users').authWithPassword(formData.email, formData.password);
+                await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
                 const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
-                if(regex.test(formData.email)){
+                if (regex.test(formData.email)) {
                     await pb.collection('users').create({
                         email: formData.email,
                         password: formData.password,
@@ -57,7 +97,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             });
 
             const verified = pb.authStore.model?.verified;
-            if(verified === false) {
+            if (verified === false) {
                 router.replace('/auth/verification');
             } else {
                 router.replace('/counter/');
@@ -73,11 +113,15 @@ export default function AuthForm({ mode }: AuthFormProps) {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData(prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string | null) => {
+        if (typeof e === 'string' || e === null) {
+            handleCaptchaSubmission(e);
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [e.target.name]: e.target.value
+            }));
+        }
     };
 
     return (
@@ -128,11 +172,17 @@ export default function AuthForm({ mode }: AuthFormProps) {
                         <div>
                             {isError && (
                                 <div className="text-red-500 dark:text-red-400">
-                                    Email must be a i24xxx Email and Password must be at least 8 characters long
-                                    {error}
+                                    Error: {error}
                                 </div>
                             )}
                         </div>
+
+                        <ReCAPTCHA
+                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
+                            ref={recaptchaRef}
+                            onChange={handleChange}
+                            onExpired={handleExpired}
+                        />
 
                         <Button
                             type="submit"
@@ -143,7 +193,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                         </Button>
                     </form>
 
-                    <div className="mt-4 text-center">
+                    <div className="mt-4 text-center flex flex-col">
                         <Link
                             href={mode === 'login' ? '/auth/signup' : '/auth/login'}
                             className="text-blue-600 hover:underline dark:text-blue-400"
@@ -152,6 +202,14 @@ export default function AuthForm({ mode }: AuthFormProps) {
                                 ? "Need an account? Sign up"
                                 : "Already have an account? Sign in"}
                         </Link>
+                        {mode === 'login' && (
+                            <Link
+                                href="/auth/reset"
+                                className="text-blue-600 hover:underline dark:text-blue-400"
+                            >
+                                Forgot Password
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div>
