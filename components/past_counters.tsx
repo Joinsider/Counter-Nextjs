@@ -1,23 +1,25 @@
 // components/PastCounters.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { pb } from '@/lib/pocketbase';
+import React, {useEffect, useState} from 'react';
+import {pb} from '@/lib/pocketbase';
 import {Counter} from "@/lib/types/counter";
-
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
+import Link from "next/link";
 
 interface CounterProps {
     typeId?: string;
 }
 
-export function PastCounters({ typeId }: CounterProps) {
-
+export function PastCounters({typeId}: CounterProps) {
     if (!typeId) {
         typeId = '3bqw5z4ht16sz75';
     }
 
     const [pastCounters, setPastCounters] = useState<Counter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     useEffect(() => {
         const fetchPastCounters = async () => {
@@ -53,26 +55,38 @@ export function PastCounters({ typeId }: CounterProps) {
 
     return (
         <div className="mt-12">
-            <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center">Past Counters</h2>
-            <div className="space-y-4">
-                {pastCounters.map((counter) => (
-                    <div
-                        key={counter.id}
-                        className="p-4 bg-gray-50 rounded-lg shadow-sm dark:bg-gray-600 dark:text-gray-200"
-                    >
-                        <div className="flex justify-between items-center ">
-                            <div className="text-lg font-medium">
-                                Value: {counter.value}
+            <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center cursor-default" onClick={() => setIsCollapsed(!isCollapsed)}>
+                    Past Counters
+                <button
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    className="ml-4 text-sm text-blue-600 hover:underline dark:text-blue-400"
+                >
+                    <FontAwesomeIcon icon={isCollapsed ? faChevronDown : faChevronUp} />
+                </button>
+            </h2>
+            <div>
+                {!isCollapsed && (
+                    <div className="space-y-4">
+                        {pastCounters.map((counter) => (
+                            <div
+                                key={counter.id}
+                                className="p-4 bg-gray-50 rounded-lg shadow-sm dark:bg-gray-600 dark:text-gray-200"
+                            >
+                                <div className="flex justify-between items-center ">
+                                    <div className="text-lg font-medium">
+                                        Value: {counter.value}
+                                    </div>
+                                    <div className="text-sm p-1 text-gray-500 dark:text-gray-400">
+                                        {counter.date}
+                                    </div>
+                                </div>
                             </div>
-                            <div className="text-sm p-1 text-gray-500 dark:text-gray-400">
-                                {counter.date}
+                        ))}
+                        {pastCounters.length === 0 && (
+                            <div className="text-center text-gray-500">
+                                No past counters found
                             </div>
-                        </div>
-                    </div>
-                ))}
-                {pastCounters.length === 0 && (
-                    <div className="text-center text-gray-500">
-                        No past counters found
+                        )}
                     </div>
                 )}
             </div>
