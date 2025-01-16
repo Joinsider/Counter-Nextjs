@@ -75,7 +75,12 @@ export default function AuthForm({mode}: AuthFormProps) {
                 await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
                 const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
-                if (regex.test(formData.email) && formData.password.length >= 8 && formData.password.length <= 70) {
+                if(formData.password.length < 8 || formData.password.length > 70) {
+                    setIsError(true);
+                    const error = "Password must be between 8 and 70 characters";
+                    setError(error);
+                    throw new Error(error);
+                }else if (regex.test(formData.email)) {
                     await pb.collection('users').create({
                         email: formData.email,
                         password: formData.password,
@@ -165,7 +170,6 @@ export default function AuthForm({mode}: AuthFormProps) {
                                 value={formData.password}
                                 min={8}
                                 minLength={8}
-                                max={70}
                                 maxLength={70}
                                 onChange={handleChange}
                                 required
