@@ -72,7 +72,7 @@ export default function AuthForm({mode}: AuthFormProps) {
 
         try {
             if (mode === 'login') {
-                await pb.collection('users').authWithPassword(formData.email, formData.password);
+                const res = await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
                 const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
                 if(formData.password.length < 8 || formData.password.length > 70) {
@@ -113,6 +113,8 @@ export default function AuthForm({mode}: AuthFormProps) {
                 description: error instanceof Error ? error.message : 'Something went wrong',
                 variant: 'destructive',
             });
+            setIsError(true);
+            setError(error instanceof Error ? error.message : 'Something went wrong');
         } finally {
             setIsLoading(false);
         }
