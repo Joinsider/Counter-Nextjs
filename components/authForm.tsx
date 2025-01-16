@@ -81,13 +81,17 @@ export default function AuthForm({mode}: AuthFormProps) {
                     setError(error);
                     throw new Error(error);
                 }else if (regex.test(formData.email)) {
-                    await pb.collection('users').create({
+                    const res = await pb.collection('users').create({
                         email: formData.email,
                         password: formData.password,
                         passwordConfirm: formData.password,
                         username: formData.username,
                     });
                     await pb.collection('users').authWithPassword(formData.email, formData.password);
+                    await pb.collection('user_info').create({
+                        userId: res.id,
+                        username: formData.username,
+                    })
                 } else {
                     setIsError(true);
                     const error = "Email must be a i24... e-mail";

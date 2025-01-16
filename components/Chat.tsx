@@ -1,11 +1,10 @@
 'use client';
 
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {pb} from '@/lib/pocketbase';
 import {Button} from './ui/button';
 import {Input} from './ui/input';
 import {ScrollArea} from './ui/scroll-area';
-import {Expand} from 'lucide-react';
 
 interface Message {
     id: string;
@@ -38,6 +37,7 @@ export function Chat({typeId}: ChatProps) {
     const [usernames, setUsernames] = useState<Record<string, string>>({});
     const [failedUserFetches, setFailedUserFetches] = useState<Record<string, number>>({});
     const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -135,14 +135,22 @@ export function Chat({typeId}: ChatProps) {
 
         try {
             const uid = await pb.authStore.model?.id;
-            await pb.collection('messages').create({
-                message: formData.message,
-                userId: uid,
-                typeId: typeId
-            }).then(() => {
-                scrollToBottom();
-            });
-            formData.message = '';
+            if (formData.message.length === 0) {
+                setIsError(true);
+                setError("Message must contain at least one non-whitespace character");
+                return;
+            } else {
+                setIsError(false);
+                await pb.collection('messages').create({
+                    message: formData.message,
+                    userId: uid,
+                    typeId: typeId
+                }).then(() => {
+                    scrollToBottom();
+                });
+                formData.message = '';
+            }
+
         } catch (err) {
             setError('Failed to send message');
         } finally {
@@ -157,10 +165,6 @@ export function Chat({typeId}: ChatProps) {
 
     if (isLoading) {
         return <div className="text-center p-4">Loading chat...</div>;
-    }
-
-    if (error) {
-        return <div className="text-red-500 p-4">{error}</div>;
     }
 
     return (
@@ -207,10 +211,17 @@ export function Chat({typeId}: ChatProps) {
                         value={formData.message}
                         placeholder="Type your message..."
                         className="flex-1"
+                        minLength={1}
+                        required={true}
                         onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />
                 </div>
                 <Button type="submit" className="mt-2">Send Message</Button>
+                {isError && (
+                    <div className="text-red-500 dark:text-red-400">
+                        Error: {error}
+                    </div>
+                )}
             </form>
         </div>
     );
