@@ -1,94 +1,27 @@
 // components/PastCounters.tsx
 'use client';
 
-import React, {useEffect, useState} from 'react';
-import {pb} from '@/lib/pocketbase';
-import {Counter} from "@/lib/types/counter";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
-import Link from "next/link";
+import { useCounterData } from '@/lib/hooks/useCounterData';
 
-interface CounterProps {
-    typeId?: string;
-}
-
-export function PastCounters({typeId}: CounterProps) {
-    if (!typeId) {
-        typeId = '3bqw5z4ht16sz75';
-    }
-
-    const [pastCounters, setPastCounters] = useState<Counter[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
-    useEffect(() => {
-        const fetchPastCounters = async () => {
-            try {
-                const today = new Date().toISOString().split('T')[0];
-                const records = await pb.collection('counter').getList<Counter>(1, 50, {
-                    filter: `type = "${typeId}" && date != "${today}"`,
-                    sort: '-date',
-                    expand: 'type'
-                });
-
-                const nonZeroCounters = records.items.filter(counter => counter.value !== 0);
-                setPastCounters(nonZeroCounters);
-
-                // Remove counters with value 0 from the database
-                const zeroValueCounters = records.items.filter(counter => counter.value === 0);
-                for (const counter of zeroValueCounters) {
-                    await pb.collection('counter').delete(counter.id);
-                }
-            } catch (error) {
-                console.error('Error fetching past counters:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchPastCounters();
-    }, []);
+export function PastCounters({ typeId }: { typeId: string }) {
+    const { pastCounters, isLoading } = useCounterData(typeId);
 
     if (isLoading) {
-        return <div className="text-center mt-8">Loading past counters...</div>;
+        return <div>Loading past counters...</div>;
     }
 
     return (
-        <div className="mt-12">
-            <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center cursor-default" onClick={() => setIsCollapsed(!isCollapsed)}>
-                    Past Counters
-                <button
-                    onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="ml-4 text-sm text-blue-600 hover:underline dark:text-blue-400"
-                >
-                    <FontAwesomeIcon icon={isCollapsed ? faChevronDown : faChevronUp} />
-                </button>
-            </h2>
-            <div>
-                {!isCollapsed && (
-                    <div className="space-y-4">
-                        {pastCounters.map((counter) => (
-                            <div
-                                key={counter.id}
-                                className="p-4 bg-gray-50 rounded-lg shadow-sm dark:bg-gray-600 dark:text-gray-200"
-                            >
-                                <div className="flex justify-between items-center ">
-                                    <div className="text-lg font-medium">
-                                        Value: {counter.value}
-                                    </div>
-                                    <div className="text-sm p-1 text-gray-500 dark:text-gray-400">
-                                        {counter.date}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        {pastCounters.length === 0 && (
-                            <div className="text-center text-gray-500">
-                                No past counters found
-                            </div>
-                        )}
+        <div className="mt-8">
+            <h2 className="text-2xl font-semibold mb-4">Past Counters</h2>
+            <div className="space-y-4">
+                {pastCounters.map((counter) => (
+                    <div key={counter.id} className="p-4 bg-gray-100 rounded-lg dark:bg-gray-600">
+                        <div className="flex justify-between">
+                            <span>Value: {counter.value}</span>
+                            <span>{counter.date}</span>
+                        </div>
                     </div>
-                )}
+                ))}
             </div>
         </div>
     );

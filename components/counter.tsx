@@ -1,53 +1,31 @@
+// components/Counter.tsx
 'use client';
 
-import {useCounter} from '@/lib/hooks/useCounter';
-import {CounterDisplay} from '@/components/ui/counter-display';
-import {CounterButton} from '@/components/ui/counter-button';
-import {APP_TITLE} from '@/lib/config';
-import React, {useEffect, useState} from "react";
+import { useCounterData } from '@/lib/hooks/useCounterData';
+import { CounterDisplay } from './CounterDisplay';
+import { CounterButton } from './CounterButton';
+import { APP_TITLE } from '@/lib/config';
+import { useEffect, useState } from "react";
+import { pb } from '@/lib/pocketbase';
+import { useRouter } from "next/navigation";
 import {PastCounters} from "@/components/past_counters";
-import {pb} from "@/lib/pocketbase";
-import {useRouter} from "next/navigation";
 import LoadCounterStats from "@/components/loadCounterStats";
-
-export const dynamic = 'force-dynamic'
 
 interface CounterProps {
     typeId?: string;
 }
 
-export function Counter({typeId}: CounterProps) {
+export function Counter({ typeId = '3bqw5z4ht16sz75' }: CounterProps) {
     const router = useRouter();
-    if (!typeId) {
-        typeId = '3bqw5z4ht16sz75';
-    }
-
-    const {value, isLoading, error, increment, decrement, title, date} = useCounter(typeId);
-
-
-    if (error) {
-        return (
-            <div className="text-center text-red-500 dark:text-red-400">
-                {error}
-            </div>
-        );
-    }
-
-    const handleIncrement = async () => {
-        try {
-            await increment();
-        } catch (error) {
-            console.error('Failed to increment:', error);
-        }
-    };
-
-    const handleDecrement = async () => {
-        try {
-            await decrement();
-        } catch (error) {
-            console.error('Failed to decrement:', error);
-        }
-    };
+    const {
+        value,
+        isLoading,
+        error,
+        increment,
+        decrement,
+        title,
+        date
+    } = useCounterData(typeId);
 
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -71,7 +49,15 @@ export function Counter({typeId}: CounterProps) {
         };
 
         checkAuthState();
-    }, []); // Empty dependency array
+    }, []);
+
+    if (error) {
+        return (
+            <div className="text-center text-red-500 dark:text-red-400">
+                {error}
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col space-y-4">
@@ -87,24 +73,24 @@ export function Counter({typeId}: CounterProps) {
                 )}
 
                 <div className="flex flex-col items-center space-y-2">
-                    <CounterDisplay value={value}/>
+                    <CounterDisplay value={value} />
                     {date && (
                         <span className="text-sm text-gray-500">
-                        {date}
-                    </span>
+              {date}
+            </span>
                     )}
                 </div>
 
                 {isLoggedIn ? (
                     <div className="flex flex-col space-y-3">
                         <CounterButton
-                            onClick={handleIncrement}
+                            onClick={increment}
                             isLoading={isLoading}
                             text="Increment"
                             disabled={isLoading}
                         />
                         <CounterButton
-                            onClick={handleDecrement}
+                            onClick={decrement}
                             isLoading={isLoading}
                             text="Decrement"
                             disabled={isLoading}
@@ -113,9 +99,10 @@ export function Counter({typeId}: CounterProps) {
                 ) : (
                     <div>Login to edit the counter</div>
                 )}
-                <PastCounters typeId={typeId}/>
+
+                <PastCounters typeId={typeId} />
             </div>
-            <LoadCounterStats typeId={typeId}/>
+            <LoadCounterStats typeId={typeId} />
         </div>
     );
 }
