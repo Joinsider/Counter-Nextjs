@@ -75,7 +75,7 @@ export default function AuthForm({mode}: AuthFormProps) {
                 await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
                 const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
-                if (regex.test(formData.email)) {
+                if (regex.test(formData.email) && formData.password.length >= 8 && formData.password.length <= 70) {
                     await pb.collection('users').create({
                         email: formData.email,
                         password: formData.password,
