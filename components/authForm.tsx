@@ -165,6 +165,8 @@ export default function AuthForm({mode}: AuthFormProps) {
                                 value={formData.password}
                                 min={8}
                                 minLength={8}
+                                max={70}
+                                maxLength={70}
                                 onChange={handleChange}
                                 required
                             />
