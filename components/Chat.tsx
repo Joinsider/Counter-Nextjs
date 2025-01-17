@@ -39,8 +39,8 @@ export function Chat({typeId}: ChatProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const scrollRef = useRef<HTMLDivElement>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const [formData, setFormData] = useState({
         message: ''
@@ -97,10 +97,11 @@ export function Chat({typeId}: ChatProps) {
                 setUsernames(usernameMap);
                 setMessages(records);
                 setIsLoading(false);
-                scrollToBottom();
             } catch (err) {
                 setError('Failed to load messages');
                 setIsLoading(false);
+            } finally {
+                scrollToBottom();
             }
         };
 
@@ -125,8 +126,11 @@ export function Chat({typeId}: ChatProps) {
     }, [typeId, isLoggedIn]);
 
     const scrollToBottom = () => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollIntoView({behavior: 'smooth'});
+        if (scrollAreaRef.current) {
+            const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+            if (scrollContainer) {
+                scrollContainer.scrollTop = scrollContainer.scrollHeight;
+            }
         }
     };
 
@@ -146,7 +150,7 @@ export function Chat({typeId}: ChatProps) {
                     userId: uid,
                     typeId: typeId
                 }).then(() => {
-                    scrollToBottom();
+                    setTimeout(scrollToBottom, 100);
                 });
                 formData.message = '';
             }
@@ -155,7 +159,7 @@ export function Chat({typeId}: ChatProps) {
             setError('Failed to send message');
         } finally {
             setFormData({message: ''});
-            scrollToBottom();
+            setTimeout(scrollToBottom, 100)
         }
     };
 
@@ -173,7 +177,7 @@ export function Chat({typeId}: ChatProps) {
                 <h2 className="text-lg font-semibold">Chat</h2>
             </div>
 
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea ref={scrollAreaRef} className="flex-1 p-4" onScroll={scrollToBottom}>
                 {
                     messages.length === 0 && (
                         <div className="text-center text-gray-500 dark:text-gray-400">
@@ -192,8 +196,8 @@ export function Chat({typeId}: ChatProps) {
                         >
                             <div
                                 className={`max-w-[80%] rounded-lg p-3 ${message.userId === pb.authStore.model?.id
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-700'
+                                    ? 'bg-blue-500 text-white drop-shadow-xl'
+                                    : 'bg-gray-100 drop-shadow-xl dark:bg-gray-700'
                                 }`}
                             >
                                 <div className="font-semibold text-sm mb-1">
@@ -206,7 +210,6 @@ export function Chat({typeId}: ChatProps) {
                             </div>
                         </div>
                     ))}
-                    <div ref={scrollRef}/>
                 </div>
             </ScrollArea>
 

@@ -17,6 +17,8 @@ interface CounterProps {
 }
 
 export function Counter({typeId}: CounterProps) {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     const router = useRouter();
     if (!typeId) {
         typeId = '3bqw5z4ht16sz75';
@@ -48,8 +50,6 @@ export function Counter({typeId}: CounterProps) {
             console.error('Failed to decrement:', error);
         }
     };
-
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
         const checkAuthState = async () => {
