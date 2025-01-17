@@ -5,6 +5,8 @@ import {pb} from '@/lib/pocketbase';
 import {Button} from './ui/button';
 import {Input} from './ui/input';
 import {ScrollArea} from './ui/scroll-area';
+import useContextMenu from "@/hooks/useContextMenu";
+import ContextMenu from "@/components/ContextMenu";
 
 interface Message {
     id: string;
@@ -40,10 +42,29 @@ export function Chat({typeId}: ChatProps) {
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     const [formData, setFormData] = useState({
         message: ''
     })
+
+    const { menuVisible, menuPosition, showMenu, hideMenu } = useContextMenu();
+
+    const handleContextMenu = (e: React.MouseEvent) => {
+        e.preventDefault();
+        showMenu(e.pageX, e.pageY);
+    };
+
+    const menuItems = [
+        {
+            label: 'Edit message',
+            action: () => console.log('Option 1 clicked')
+        },
+        {
+            label: 'Delete message',
+            action: () => console.log('Option 2 clicked')
+        }
+    ];
 
     const fetchUsername = async (userId: string) => {
         // Skip if we've already failed twice for this user
@@ -192,6 +213,7 @@ export function Chat({typeId}: ChatProps) {
                                 ? 'items-end'
                                 : 'items-start'
                             }`}
+                            onContextMenu={handleContextMenu}
                         >
                             <div
                                 className={`max-w-[80%] rounded-lg p-3 ${message.userId === pb.authStore.model?.id
@@ -207,6 +229,12 @@ export function Chat({typeId}: ChatProps) {
                                     {new Date(message.created).toLocaleString()}
                                 </div>
                             </div>
+                            {menuVisible && (
+                                <ContextMenu
+                                    position={menuPosition}
+                                    items={menuItems}
+                                />
+                            )}
                         </div>
                     ))}
                 </div>
