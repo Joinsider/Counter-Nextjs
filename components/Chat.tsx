@@ -201,7 +201,7 @@ export function Chat({typeId}: ChatProps) {
                                 </div>
                                 <div className="break-words">{message.message}</div>
                                 <div className="text-xs mt-1 opacity-70">
-                                    {new Date(message.created).toLocaleTimeString()}
+                                    {new Date(message.created).toLocaleString()}
                                 </div>
                             </div>
                         </div>
