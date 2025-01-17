@@ -23,13 +23,11 @@ export default function ResetForm({mode, token}: AuthFormProps) {
     });
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
-    const [isSent, setIsSent] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
     const {toast} = useToast();
-
-    const recaptchaRef = useRef<ReCAPTCHA>(null);
     const [isVerified, setIsVerified] = useState(false);
+    const recaptchaRef = useRef<ReCAPTCHA>(null);
 
     async function handleCaptchaSubmission(token: string | null) {
         try {

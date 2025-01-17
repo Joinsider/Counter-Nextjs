@@ -4,8 +4,7 @@
 import React, {useEffect, useState} from 'react';
 import {pb} from '@/lib/pocketbase';
 import {Counter} from "@/lib/types/counter";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faChevronDown, faChevronUp} from '@fortawesome/free-solid-svg-icons';
+import {ChevronDownCircle, ChevronUpCircle} from '@geist-ui/icons';
 import Link from "next/link";
 
 interface CounterProps {
@@ -13,13 +12,13 @@ interface CounterProps {
 }
 
 export function PastCounters({typeId}: CounterProps) {
+    const [pastCounters, setPastCounters] = useState<Counter[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(true);
+
     if (!typeId) {
         typeId = '3bqw5z4ht16sz75';
     }
-
-    const [pastCounters, setPastCounters] = useState<Counter[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isCollapsed, setIsCollapsed] = useState(false);
 
     useEffect(() => {
         const fetchPastCounters = async () => {
@@ -61,7 +60,10 @@ export function PastCounters({typeId}: CounterProps) {
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="ml-4 text-sm text-blue-600 hover:underline dark:text-blue-400"
                 >
-                    <FontAwesomeIcon icon={isCollapsed ? faChevronDown : faChevronUp} />
+                    {isCollapsed ?
+                    <ChevronDownCircle size={20} /> :
+                    <ChevronUpCircle size={20} />
+                    }
                 </button>
             </h2>
             <div>
