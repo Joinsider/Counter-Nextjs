@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import {pb} from '@/lib/pocketbase';
 import {format} from 'date-fns';
+import {Counter} from '@/lib/types/counter';
 
 interface CounterState {
     value: number;
@@ -27,56 +28,67 @@ export const fetchCounter = createAsyncThunk(
     async (typeId: string) => {
         const type = await pb.collection('counter_type').getOne(typeId);
         const today = new Date().toISOString().split('T')[0];
-        const records = await pb.collection('counter').getList(1, 1, {
+        const records = await pb.collection('counter').getList<Counter>(1, 1, {
             filter: `date = "${today}" && type = "${typeId}"`,
             expand: 'type'
         });
 
         if (records.items.length > 0) {
+            const counter = records.items[0];
             return {
-                ...records.items[0],
+                value: counter.value,
+                date: counter.date,
+                typeId,
                 title: type.title,
-                typeId
+                id: counter.id
             };
         }
 
-        const newCounter = await pb.collection('counter').create({
+        const newCounter = await pb.collection('counter').create<Counter>({
             value: 0,
             date: today,
             type: typeId,
         });
 
         return {
-            ...newCounter,
+            value: newCounter.value,
+            date: newCounter.date,
+            typeId,
             title: type.title,
-            typeId
+            id: newCounter.id
         };
     }
 );
 
 export const incrementCounter = createAsyncThunk(
     'counter/increment',
-    async (_, { getState }) => {
+    async (typeId: string, { getState }) => {
         const state = getState() as { counter: CounterState };
         const { id } = state.counter;
 
-        return await pb.collection('counter').update(id, {
+        const updatedCounter = await pb.collection('counter').update<Counter>(id, {
             value: state.counter.value + 1
         });
+
+        return {
+            value: updatedCounter.value
+        };
     }
 );
 
 export const decrementCounter = createAsyncThunk(
     'counter/decrement',
-    async (_, { getState }) => {
+    async (typeId: string, { getState }) => {
         const state = getState() as { counter: CounterState };
         const { id } = state.counter;
 
-        const updatedCounter = await pb.collection('counter').update(id, {
+        const updatedCounter = await pb.collection('counter').update<Counter>(id, {
             value: state.counter.value - 1
         });
 
-        return updatedCounter;
+        return {
+            value: updatedCounter.value
+        };
     }
 );
 
