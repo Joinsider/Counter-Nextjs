@@ -1,31 +1,44 @@
 'use client';
 
-import {useCounter} from '@/lib/hooks/useCounter';
-import {CounterDisplay} from '@/components/ui/counter-display';
-import {CounterButton} from '@/components/ui/counter-button';
-import {APP_TITLE} from '@/lib/config';
-import React, {useEffect, useState} from "react";
-import {PastCounters} from "@/components/past_counters";
-import {pb} from "@/lib/pocketbase";
-import {useRouter} from "next/navigation";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/lib/store/store';
+import { fetchCounter, incrementCounter, decrementCounter } from '@/lib/store/slices/counterSlice';
+import { CounterDisplay } from '@/components/ui/counter-display';
+import { CounterButton } from '@/components/ui/counter-button';
+import { APP_TITLE } from '@/lib/config';
+import { PastCounters } from "@/components/past_counters";
+import { pb } from "@/lib/pocketbase";
+import { useRouter } from "next/navigation";
 import LoadCounterStats from "@/components/loadCounterStats";
-
-export const dynamic = 'force-dynamic'
 
 interface CounterProps {
     typeId?: string;
 }
 
-export function Counter({typeId}: CounterProps) {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+export function Counter({ typeId = '3bqw5z4ht16sz75' }: CounterProps) {
+    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    if (!typeId) {
-        typeId = '3bqw5z4ht16sz75';
-    }
+    const { value, date, title, isLoading, error } = useSelector((state: RootState) => state.counter);
 
-    const {value, isLoading, error, increment, decrement, title, date} = useCounter(typeId);
+    useEffect(() => {
+        const checkAuthState = async () => {
+            try {
+                const valid = await pb.authStore.isValid;
+                const verified = pb.authStore.model?.verified;
+                if (valid) {
+                    if (!verified) {
+                        router.replace('/auth/verification');
+                    }
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+            }
+        };
 
+        checkAuthState();
+        dispatch(fetchCounter(typeId));
+    }, [dispatch, typeId, router]);
 
     if (error) {
         return (
@@ -35,43 +48,15 @@ export function Counter({typeId}: CounterProps) {
         );
     }
 
-    const handleIncrement = async () => {
-        try {
-            await increment();
-        } catch (error) {
-            console.error('Failed to increment:', error);
-        }
+    const handleIncrement = () => {
+        dispatch(incrementCounter());
     };
 
-    const handleDecrement = async () => {
-        try {
-            await decrement();
-        } catch (error) {
-            console.error('Failed to decrement:', error);
-        }
+    const handleDecrement = () => {
+        dispatch(decrementCounter());
     };
 
-    useEffect(() => {
-        const checkAuthState = async () => {
-            try {
-                const valid = await pb.authStore.isValid;
-                const verified = pb.authStore.model?.verified;
-                if (valid) {
-                    if (verified) {
-                        setIsLoggedIn(true);
-                    } else {
-                        router.replace('/auth/verification');
-                    }
-                } else {
-                    setIsLoggedIn(false);
-                }
-            } catch (error) {
-                console.error('Auth check failed:', error);
-            }
-        };
-
-        checkAuthState();
-    }, []); // Empty dependency array
+    const isLoggedIn = pb.authStore.isValid && pb.authStore.model?.verified;
 
     return (
         <div className="flex flex-col space-y-4">
@@ -90,8 +75,8 @@ export function Counter({typeId}: CounterProps) {
                     <CounterDisplay value={value}/>
                     {date && (
                         <span className="text-sm text-gray-500">
-                        {date}
-                    </span>
+                            {date}
+                        </span>
                     )}
                 </div>
 
@@ -107,7 +92,7 @@ export function Counter({typeId}: CounterProps) {
                             onClick={handleDecrement}
                             isLoading={isLoading}
                             text="Decrement"
-                            disabled={isLoading}
+                            disabled={isLoading || value === 0}
                         />
                     </div>
                 ) : (

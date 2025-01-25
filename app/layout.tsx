@@ -7,6 +7,7 @@ import {Analytics} from "@vercel/analytics/react";
 import {NextUIProvider} from "@nextui-org/react";
 import {ThemeProvider} from "@/components/providers";
 import {ThemeSwitcher} from "@/components/themeSwitcher";
+import { Providers } from './providers';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -29,16 +30,18 @@ export default function RootLayout({children,}: {
             <meta name="apple-mobile-web-app-title" content="Counter"/>
         </head>
         <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <NextUIProvider>
-                <div className="flex min-h-screen">
-                    <main className="flex-1 transition-all duration-300 ease-in-out">
-                        <ThemeSwitcher />
-                        {children}
-                    </main>
-                </div>
-            </NextUIProvider>
-        </ThemeProvider>
+        <Providers>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+                <NextUIProvider>
+                    <div className="flex min-h-screen">
+                        <main className="flex-1 transition-all duration-300 ease-in-out">
+                            <ThemeSwitcher />
+                            {children}
+                        </main>
+                    </div>
+                </NextUIProvider>
+            </ThemeProvider>
+        </Providers>
         <SpeedInsights/>
         <Analytics/>
         </body>
