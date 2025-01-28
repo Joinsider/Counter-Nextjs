@@ -26,69 +26,86 @@ const initialState: CounterState = {
 export const fetchCounter = createAsyncThunk(
     'counter/fetchCounter',
     async (typeId: string) => {
-        const type = await pb.collection('counter_type').getOne(typeId);
-        const today = new Date().toISOString().split('T')[0];
-        const records = await pb.collection('counter').getList<Counter>(1, 1, {
-            filter: `date = "${today}" && type = "${typeId}"`,
-            expand: 'type'
-        });
+        try {
+            const type = await pb.collection('counter_type').getOne(typeId);
 
-        if (records.items.length > 0) {
-            const counter = records.items[0];
+            const today = new Date().toISOString().split('T')[0];
+            const records = await pb.collection('counter').getList<Counter>(1, 1, {
+                filter: `date = "${today}" && type = "${typeId}"`,
+                expand: 'type'
+            });
+
+            if (records.items.length > 0) {
+                const counter = records.items[0];
+                return {
+                    value: counter.value,
+                    date: counter.date,
+                    typeId,
+                    title: type.title,
+                    id: counter.id
+                };
+            }
+
+            const newCounter = await pb.collection('counter').create<Counter>({
+                value: 0,
+                date: today,
+                type: typeId,
+            });
+
             return {
-                value: counter.value,
-                date: counter.date,
+                value: newCounter.value,
+                date: newCounter.date,
                 typeId,
                 title: type.title,
-                id: counter.id
+                id: newCounter.id
             };
+        } catch (error) {
+            console.error('Error fetching counter:', error);
+            throw error;
         }
 
-        const newCounter = await pb.collection('counter').create<Counter>({
-            value: 0,
-            date: today,
-            type: typeId,
-        });
-
-        return {
-            value: newCounter.value,
-            date: newCounter.date,
-            typeId,
-            title: type.title,
-            id: newCounter.id
-        };
     }
 );
 
 export const incrementCounter = createAsyncThunk(
     'counter/increment',
-    async (typeId: string, { getState }) => {
-        const state = getState() as { counter: CounterState };
-        const { id } = state.counter;
+    async (typeId: string, {getState}) => {
+        try {
+            const state = getState() as { counter: CounterState };
+            const {id} = state.counter;
 
-        const updatedCounter = await pb.collection('counter').update<Counter>(id, {
-            value: state.counter.value + 1
-        });
+            const updatedCounter = await pb.collection('counter').update<Counter>(id, {
+                value: state.counter.value + 1
+            });
 
-        return {
-            value: updatedCounter.value
-        };
+            return {
+                value: updatedCounter.value
+            };
+        } catch (error) {
+            console.error('Error incrementing counter:', error);
+            throw error;
+        }
     }
 );
 
 export const decrementCounter = createAsyncThunk(
     'counter/decrement',
-    async (typeId: string, { getState }) => {
-        const state = getState() as { counter: CounterState };
-        const { id } = state.counter;
+    async (typeId: string, {getState}) => {
+        try {
+            const state = getState() as { counter: CounterState };
+            const {id} = state.counter;
 
-        const updatedCounter = await pb.collection('counter').update<Counter>(id, {
-            value: state.counter.value - 1
-        });
+            const updatedCounter = await pb.collection('counter').update<Counter>(id, {
+                value: state.counter.value - 1
+            });
 
-        return {
-            value: updatedCounter.value
-        };
+            return {
+                value: updatedCounter.value
+            };
+        } catch (error) {
+            console.error('Error decrementing counter:', error);
+            throw error;
+        }
     }
 );
 

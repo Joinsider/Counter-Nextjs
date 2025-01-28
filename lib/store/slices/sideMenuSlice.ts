@@ -19,10 +19,15 @@ const initialState: SideMenuState = {
 export const fetchCounterTypes = createAsyncThunk(
     'sideMenu/fetchCounterTypes',
     async () => {
-        const records = await pb.collection('counter_type').getList<CounterType>(1, 50, {
-            sort: 'title'
-        });
-        return records.items;
+        try {
+            const records = await pb.collection('counter_type').getList<CounterType>(1, 50, {
+                sort: 'title'
+            });
+            return records.items;
+        } catch (error) {
+            console.error('Error fetching counter types:', error);
+            throw error;
+        }
     }
 );
 
