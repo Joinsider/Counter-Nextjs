@@ -29,8 +29,8 @@ export type Counter = BaseModel & {
 }
 
 export type CountDown = BaseModel & {
-  Title: string;
-  Date: string;
+  title: string;
+  date: string;
   admin: string;
 }
 

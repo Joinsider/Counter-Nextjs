@@ -1,184 +1,177 @@
 import { pb } from "@/lib/pocketbase";
-import { ActionCreatorWithPreparedPayload, createAsyncThunk, createSlice, SerializedError } from "@reduxjs/toolkit";
-import { format } from "date-fns";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RecordModel } from "pocketbase";
 
-
-interface CountdownState {
-    value: number;
-    date: string;
-    isLoading: boolean;
-    error: string | null;
+interface Countdown {
     id: string;
+    title: string;
+    date: string;
+    created: string;
     admin: string;
 }
 
+interface CountdownState {
+    activeCountdowns: Countdown[];
+    pastCountdowns: Countdown[];
+    currentCountdown: Countdown | null;
+    isLoading: boolean;
+    error: string | null;
+}
+
 const initialState: CountdownState = {
-    value: 0,
-    date: format(new Date(), 'yyyy-MM-dd'),
+    activeCountdowns: [],
+    pastCountdowns: [],
+    currentCountdown: null,
     isLoading: false,
     error: null,
-    id: '',
-    admin: '',
 };
 
-export const fetchCountdown = createAsyncThunk<{ value: number; date: string; id: string; admin: string }, string>(
+export const fetchCountdowns = createAsyncThunk(
+    'countdown/fetchCountdowns',
+    async () => {
+        try {
+            if (!pb.authStore.isValid) {
+                throw new Error('Authentication required');
+            }
+
+            const records = await pb.collection('countdown').getList(1, 50, {
+                sort: 'date',
+                expand: 'admin'
+            });
+
+            const now = new Date();
+            const active: Countdown[] = [];
+            const past: Countdown[] = [];
+
+            records.items.forEach((item: any) => {
+                const countdown = {
+                    id: item.id,
+                    title: item.title,
+                    date: item.date,
+                    created: item.created,
+                    admin: item.admin
+                };
+
+                if (new Date(item.date) > now) {
+                    active.push(countdown);
+                } else {
+                    past.push(countdown);
+                }
+            });
+
+            return { active, past };
+        } catch (error) {
+            throw error;
+        }
+    }
+);
+
+export const fetchCountdown = createAsyncThunk(
     'countdown/fetchCountdown',
     async (id: string) => {
         try {
-            const countdown = await pb.collection('countdown').getOne(id);
-            
+            if (!pb.authStore.isValid) {
+                throw new Error('Authentication required');
+            }
+
+            const record = await pb.collection('countdown').getOne(id, {
+                expand: 'admin'
+            });
             return {
-                value: countdown.value,
-                date: countdown.date,
-                id: countdown.id,
-                admin: countdown.admin
+                id: record.id,
+                title: record.Title,
+                date: record.Date,
+                created: record.created,
+                admin: record.admin
             };
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }
 );
 
-export const fetchAllCountdowns = createAsyncThunk(
-    'countdown/fetchAllCountdowns',
-    async () => {
-        try {
-            const countdowns = await pb.collection('countdown').getList();
-            return countdowns.items;
-export const fetchAllCountdowns = createAsyncThunk<RecordModel[], void>(
-    'countdown/fetchAllCountdowns',
-    async () => {
-        try {
-            const countdowns = await pb.collection('countdown').getList();
-            return countdowns.items;
-        } catch (error) {
-            console.error(error);
-            throw error;
-        }
-    }
-);
-export const updateCountdown = createAsyncThunk<{ value: number; date: string; id: string; admin: string }, CountdownState>(
-    'countdown/updateCountdown',
-    async (countdown: CountdownState) => {
-        try {
-            const updatedCountdown = await pb.collection('countdown').update(countdown.id, countdown);
-            return updatedCountdown;
-        } catch (error) {
-            console.error(error);
-            throw error;
-        }
-    }
-);
-            return countdowns;
-export const createCountdown = createAsyncThunk<{ value: number; date: string; id: string; admin: string }, CountdownState>(
+export const createCountdown = createAsyncThunk(
     'countdown/createCountdown',
-    async (countdown: CountdownState) => {
+    async ({ title, endDate }: { title: string; endDate: string }) => {
         try {
-            const newCountdown = await pb.collection('countdown').create(countdown);
-            return newCountdown;
+            if (!pb.authStore.isValid) {
+                throw new Error('Authentication required');
+            }
+
+            const record = await pb.collection('countdown').create({
+                title: title,
+                date: new Date(endDate).toISOString(),
+                admin: pb.authStore.model?.id
+            });
+            return {
+                id: record.id,
+                title: record.Title,
+                date: record.Date,
+                created: record.created,
+                admin: record.admin
+            };
         } catch (error) {
-            console.error(error);
             throw error;
         }
     }
 );
-            return id;
-export const deleteCountdown = createAsyncThunk<string, string>(
-    'countdown/deleteCountdown',
-    async (id: string) => {
-        try {
-            await pb.collection('countdown').delete(id);
-            return id;
-        } catch (error) {
-            console.error(error);
-            throw error;
-        }
-    }
-);
+
+const countdownSlice = createSlice({
+    name: 'countdown',
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchCountdowns.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchCountdowns.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.activeCountdowns = action.payload.active;
+                state.pastCountdowns = action.payload.past;
+            })
+            .addCase(fetchCountdowns.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to fetch countdowns';
+            })
+            .addCase(fetchCountdown.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchCountdown.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.currentCountdown = action.payload;
+            })
+            .addCase(fetchCountdown.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to fetch countdown';
+            })
+            .addCase(createCountdown.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(createCountdown.fulfilled, (state, action) => {
+                state.isLoading = false;
+                const countdown = {
+                    id: action.payload.id,
+                    title: action.payload.title,
+                    date: action.payload.date,
+                    created: action.payload.created,
+                    admin: pb.authStore.model?.id || ''
+                };
+                
+                if (new Date(action.payload.date) > new Date()) {
+                    state.activeCountdowns.push(countdown);
+                } else {
+                    state.pastCountdowns.push(countdown);
+                }
+            })
+            .addCase(createCountdown.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to create countdown';
+            });
     },
-    extraReducers: (builder: { addCase: (arg0: ActionCreatorWithPreparedPayload<[string, string, unknown?], undefined, string, never, { arg: string; requestId: string; requestStatus: "pending"; }>, arg1: (state: any) => void) => { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[{ value: any; date: any; id: string; admin: any; }, string, string, unknown?], { value: any; date: any; id: string; admin: any; }, string, never, { arg: string; requestId: string; requestStatus: "fulfilled"; }>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[Error | null, string, string, unknown?, unknown?], unknown, string, SerializedError, { arg: string; requestId: string; requestStatus: "rejected"; aborted: boolean; condition: boolean; } & ({ rejectedWithValue: true; } | ({ rejectedWithValue: false; } & {}))>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[string, void, unknown?], undefined, string, never, { arg: void; requestId: string; requestStatus: "pending"; }>, arg1: (state: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[RecordModel[], string, void, unknown?], RecordModel[], string, never, { arg: void; requestId: string; requestStatus: "fulfilled"; }>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[Error | null, string, void, unknown?, unknown?], unknown, string, SerializedError, { arg: void; requestId: string; requestStatus: "rejected"; aborted: boolean; condition: boolean; } & ({ rejectedWithValue: true; } | ({ rejectedWithValue: false; } & {}))>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[string, CountdownState, unknown?], undefined, string, never, { arg: CountdownState; requestId: string; requestStatus: "pending"; }>, arg1: (state: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[RecordModel, string, CountdownState, unknown?], RecordModel, string, never, { arg: CountdownState; requestId: string; requestStatus: "fulfilled"; }>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[Error | null, string, CountdownState, unknown?, unknown?], unknown, string, SerializedError, { arg: CountdownState; requestId: string; requestStatus: "rejected"; aborted: boolean; condition: boolean; } & ({ rejectedWithValue: true; } | ({ rejectedWithValue: false; } & {}))>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[string, CountdownState, unknown?], undefined, string, never, { arg: CountdownState; requestId: string; requestStatus: "pending"; }>, arg1: (state: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[RecordModel, string, CountdownState, unknown?], RecordModel, string, never, { arg: CountdownState; requestId: string; requestStatus: "fulfilled"; }>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[Error | null, string, CountdownState, unknown?, unknown?], unknown, string, SerializedError, { arg: CountdownState; requestId: string; requestStatus: "rejected"; aborted: boolean; condition: boolean; } & ({ rejectedWithValue: true; } | ({ rejectedWithValue: false; } & {}))>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[string, string, unknown?], undefined, string, never, { arg: string; requestId: string; requestStatus: "pending"; }>, arg1: (state: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[string, string, string, unknown?], string, string, never, { arg: string; requestId: string; requestStatus: "fulfilled"; }>, arg1: (state: any, action: any) => void): { (): any; new(): any; addCase: { (arg0: ActionCreatorWithPreparedPayload<[Error | null, string, string, unknown?, unknown?], unknown, string, SerializedError, { arg: string; requestId: string; requestStatus: "rejected"; aborted: boolean; condition: boolean; } & ({ rejectedWithValue: true; } | ({ rejectedWithValue: false; } & {}))>, arg1: (state: any, action: any) => void): void; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; new(): any; }; }; }) => builder
-        .addCase(fetchCountdown.pending, (state) => {
-            state.isLoading = true;
-            state.error = null;
-        })
-        .addCase(fetchCountdown.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.value = action.payload.value;
-            state.date = action.payload.date;
-            state.id = action.payload.id;
-            state.admin = action.payload.admin;
-        })
-        .addCase(fetchCountdown.rejected, (state, action) => {
-            state.isLoading = false;
-            state.error = 'Error fetching countdown';
-        })
-        .addCase(fetchAllCountdowns.pending, (state) => {
-            state.isLoading = true;
-            state.error = null;
-        })
-        .addCase(fetchAllCountdowns.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.error = null;
-            state.value = 0;
-            state.date = format(new Date(), 'yyyy-MM-dd');
-            state.id = '';
-            state.admin = '';
-        })
-        .addCase(fetchAllCountdowns.rejected, (state, action) => {
-            state.isLoading = false;
-            state.error = 'Error fetching countdowns';
-        })
-        .addCase(updateCountdown.pending, (state) => {
-            state.isLoading = true;
-            state.error = null;
-        })
-        .addCase(updateCountdown.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.error = null;
-            state.value = action.payload.value;
-            state.date = action.payload.date;
-            state.id = action.payload.id;
-            state.admin = action.payload.admin;
-        })
-        .addCase(updateCountdown.rejected, (state, action) => {
-            state.isLoading = false;
-            state.error = 'Error updating countdown';
-        })
-        .addCase(createCountdown.pending, (state) => {
-            state.isLoading = true;
-            state.error = null;
-        })
-        .addCase(createCountdown.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.error = null;
-            state.value = action.payload.value;
-            state.date = action.payload.date;
-            state.id = action.payload.id;
-            state.admin = action.payload.admin;
-        })
-        .addCase(createCountdown.rejected, (state, action) => {
-            state.isLoading = false;
-            state.error = 'Error creating countdown';
-        })
-        .addCase(deleteCountdown.pending, (state) => {
-            state.isLoading = true;
-            state.error = null;
-        })
-        .addCase(deleteCountdown.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.error = null;
-            state.value = 0;
-            state.date = format(new Date(), 'yyyy-MM-dd');
-            state.id = '';
-            state.admin = '';
-        })
-        .addCase(deleteCountdown.rejected, (state, action) => {
-            state.isLoading = false;
-            state.error = 'Error deleting countdown';
-        })
-    });
 });
 
 export default countdownSlice.reducer;

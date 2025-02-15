@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import counterReducer from './slices/counterSlice';
 import sideMenuReducer from './slices/sideMenuSlice';
+import countdownReducer from './slices/countdownSlice';
 import { ReactNode } from 'react';
 
 export function StoreProvider({ children }: { children: ReactNode }) {
@@ -11,6 +12,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         reducer: {
             counter: counterReducer,
             sideMenu: sideMenuReducer,
+            countdown: countdownReducer,
         },
     });
 

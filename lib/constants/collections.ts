@@ -4,6 +4,8 @@ import {Counter, CounterType} from "@/lib/pocketbase";
 export const Collections = {
   COUNTER: 'counter',
   COUNTER_TYPE: 'counter_type',
+  USER: 'users',
+  COUNTDOWN: 'countdown',
 } as const;
 
 // Type for collection names
