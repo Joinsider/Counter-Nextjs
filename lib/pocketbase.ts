@@ -1,6 +1,6 @@
 import PocketBase from 'pocketbase';
 
-const server = process.env.POCKETBASE_SERVER || 'https://ledschendlich.pockethost.io';
+const server = process.env.POCKETBASE_SERVER || 'https://ledschendlich-pb.fampopprol.me';
 
 export const pb = new PocketBase(server);
 
