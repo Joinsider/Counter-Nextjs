@@ -28,6 +28,12 @@ export type Counter = BaseModel & {
   };
 }
 
+export type CountDown = BaseModel & {
+  Title: string;
+  Date: string;
+  admin: string;
+}
+
 // Collection names as constants
 export const COUNTER_COLLECTION = 'counter';
 export const COUNTER_TYPE_COLLECTION = 'counter_type';
