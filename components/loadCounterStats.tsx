@@ -62,7 +62,7 @@ export default function LoadCounterStats({typeId}: CounterProps) {
 
     return (
         <div>
-            <div className="w-1.0 h-80 bg-gray-200 dark:bg-gray-700 rounded pt-2 pb-2">
+            <div className="w-1.0 h-80 bg-gray-200 dark:bg-gray-700 rounded pt-2 pb-2 drop-shadow-xl">
                 <AreaChartPlot data={data}/>
             </div>
         </div>

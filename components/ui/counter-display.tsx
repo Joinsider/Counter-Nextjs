@@ -1,11 +1,13 @@
+'use client';
+
 interface CounterDisplayProps {
-  value: number;
+    value: number;
 }
 
 export function CounterDisplay({ value }: CounterDisplayProps) {
-  return (
-      <div className="text-6xl font-bold text-gray-800 dark:text-gray-200">
-        {value.toLocaleString()}
-      </div>
-  );
+    return (
+        <div className="text-6xl font-bold text-gray-800 dark:text-gray-200">
+            {value.toLocaleString()}
+        </div>
+    );
 }

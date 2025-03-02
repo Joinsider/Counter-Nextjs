@@ -1,29 +1,82 @@
 'use client';
 
-import {useCounter} from '@/lib/hooks/useCounter';
-import {CounterDisplay} from '@/components/ui/counter-display';
-import {CounterButton} from '@/components/ui/counter-button';
-import {APP_TITLE} from '@/lib/config';
-import React, {useEffect, useState} from "react";
-import {PastCounters} from "@/components/past_counters";
-import {pb} from "@/lib/pocketbase";
-import {useRouter} from "next/navigation";
-import LoadCounterStats from "@/components/loadCounterStats";
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/lib/store/store';
+import { fetchCounter, incrementCounter, decrementCounter } from '@/lib/store/slices/counterSlice';
+import { CounterDisplay } from '@/components/ui/counter-display';
+import { CounterButton } from '@/components/ui/counter-button';
+import { APP_TITLE } from '@/lib/config';
+import { pb } from "@/lib/pocketbase";
+import { useRouter } from "next/navigation";
 
-export const dynamic = 'force-dynamic'
+const PastCounters = dynamic(() => import("@/components/past_counters").then(mod => ({ default: mod.PastCounters })), {
+    ssr: false
+});
+
+const LoadCounterStats = dynamic(() => import("@/components/loadCounterStats"), {
+    ssr: false
+});
 
 interface CounterProps {
     typeId?: string;
 }
 
-export function Counter({typeId}: CounterProps) {
+export function Counter({ typeId = '3bqw5z4ht16sz75' }: CounterProps) {
+    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    if (!typeId) {
-        typeId = '3bqw5z4ht16sz75';
+    const { value, date, title, isLoading, error } = useSelector((state: RootState) => state.counter);
+    const [authChecked, setAuthChecked] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        let isSubscribed = true;
+        let unsubscribe: (() => void) | undefined;
+
+        const checkAuthState = async () => {
+            if (!isSubscribed) return;
+            try {
+                const valid = await pb.authStore.isValid;
+                const verified = pb.authStore.model?.verified;
+                setIsLoggedIn(valid && verified);
+                if (valid && !verified) {
+                    router.replace('/auth/verification');
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                setIsLoggedIn(false);
+            } finally {
+                setAuthChecked(true);
+            }
+        };
+
+        const setupRealtimeSubscription = async () => {
+            if (!isSubscribed) return;
+            unsubscribe = await pb.realtime.subscribe('*', (e) => {
+                if (e.action === 'connect') {
+                    console.log('Connected to realtime');
+                } else if (e.action === 'error') {
+                    console.log('Realtime connection error');
+                }
+            });
+        };
+
+        checkAuthState();
+        dispatch(fetchCounter(typeId));
+        setupRealtimeSubscription();
+
+        return () => {
+            isSubscribed = false;
+            if (unsubscribe) {
+                unsubscribe();
+            }
+        };
+    }, [dispatch, typeId, router]);
+
+    if (!authChecked) {
+        return <div className="flex justify-center items-center">Loading...</div>;
     }
-
-    const {value, isLoading, error, increment, decrement, title, date} = useCounter(typeId);
-
 
     if (error) {
         return (
@@ -33,45 +86,13 @@ export function Counter({typeId}: CounterProps) {
         );
     }
 
-    const handleIncrement = async () => {
-        try {
-            await increment();
-        } catch (error) {
-            console.error('Failed to increment:', error);
-        }
+    const handleIncrement = () => {
+        dispatch(incrementCounter(typeId));
     };
 
-    const handleDecrement = async () => {
-        try {
-            await decrement();
-        } catch (error) {
-            console.error('Failed to decrement:', error);
-        }
+    const handleDecrement = () => {
+        dispatch(decrementCounter(typeId));
     };
-
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const checkAuthState = async () => {
-            try {
-                const valid = await pb.authStore.isValid;
-                const verified = pb.authStore.model?.verified;
-                if (valid) {
-                    if (verified) {
-                        setIsLoggedIn(true);
-                    } else {
-                        router.replace('/auth/verification');
-                    }
-                } else {
-                    setIsLoggedIn(false);
-                }
-            } catch (error) {
-                console.error('Auth check failed:', error);
-            }
-        };
-
-        checkAuthState();
-    }, []); // Empty dependency array
 
     return (
         <div className="flex flex-col space-y-4">
@@ -90,8 +111,8 @@ export function Counter({typeId}: CounterProps) {
                     <CounterDisplay value={value}/>
                     {date && (
                         <span className="text-sm text-gray-500">
-                        {date}
-                    </span>
+                            {date}
+                        </span>
                     )}
                 </div>
 
@@ -107,7 +128,7 @@ export function Counter({typeId}: CounterProps) {
                             onClick={handleDecrement}
                             isLoading={isLoading}
                             text="Decrement"
-                            disabled={isLoading}
+                            disabled={isLoading || value === 0}
                         />
                     </div>
                 ) : (

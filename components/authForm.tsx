@@ -72,7 +72,7 @@ export default function AuthForm({mode}: AuthFormProps) {
 
         try {
             if (mode === 'login') {
-                await pb.collection('users').authWithPassword(formData.email, formData.password);
+                const res = await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
                 const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
                 if(formData.password.length < 8 || formData.password.length > 70) {
@@ -81,13 +81,17 @@ export default function AuthForm({mode}: AuthFormProps) {
                     setError(error);
                     throw new Error(error);
                 }else if (regex.test(formData.email)) {
-                    await pb.collection('users').create({
+                    const res = await pb.collection('users').create({
                         email: formData.email,
                         password: formData.password,
                         passwordConfirm: formData.password,
                         username: formData.username,
                     });
                     await pb.collection('users').authWithPassword(formData.email, formData.password);
+                    await pb.collection('user_info').create({
+                        userId: res.id,
+                        username: formData.username,
+                    })
                 } else {
                     setIsError(true);
                     const error = "Email must be a i24... e-mail";
@@ -113,6 +117,8 @@ export default function AuthForm({mode}: AuthFormProps) {
                 description: error instanceof Error ? error.message : 'Something went wrong',
                 variant: 'destructive',
             });
+            setIsError(true);
+            setError(error instanceof Error ? error.message : 'Something went wrong');
         } finally {
             setIsLoading(false);
         }
