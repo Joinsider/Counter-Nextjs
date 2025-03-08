@@ -12,33 +12,39 @@ const ALLOWED_PATHS = [
   '/favicon.ico',
 ];
 
+let consecutiveDbFailures = 0;
+
 export async function middleware(request: NextRequest) {
-  // Check if the current path is in the allowed list
   const { pathname } = request.nextUrl;
-  
-  // Allow access to maintenance page and auth pages
+
   if (ALLOWED_PATHS.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
+  } else if (consecutiveDbFailures >= 4) {
+    consecutiveDbFailures = 0;
   }
 
-  try {
-    // Get the latest maintenance record
-    const records = await pb.collection('maintenance').getList(1, 1, {
-      sort: '-created'
-    });
-    
-    // If maintenance mode is enabled, redirect to maintenance page
-    if (records.items.length > 0) {
-      const maintenance = records.items[0];
-      if (maintenance.enabled) {
+  let success = false;
+  while (!success && consecutiveDbFailures < 4) {
+    try {
+      const records = await pb.collection('maintenance').getList(1, 1, {
+        sort: '-created'
+      });
+      success = true;
+      if (records.items.length > 0) {
+        const maintenance = records.items[0];
+        if (maintenance.enabled) {
+          consecutiveDbFailures = 0;
+        }
+      }
+      consecutiveDbFailures = 0;
+    } catch (error) {
+      console.error('Error checking maintenance status:', error);
+      consecutiveDbFailures++;
+      if (consecutiveDbFailures >= 4) {
         const maintenanceUrl = new URL('/maintenance', request.url);
         return NextResponse.redirect(maintenanceUrl);
       }
     }
-  } catch (error) {
-    console.error('Error checking maintenance status:', error);
-    // In case of error, allow the request to proceed
-    // You might want to change this behavior based on your requirements
   }
 
   return NextResponse.next();
