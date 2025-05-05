@@ -21,14 +21,14 @@ export function ThemeSwitcher() {
     }, [dispatch]);
 
     const toggleTheme = () => {
-        const newTheme = theme === 'light' 
-            ? 'dark' 
-            : theme === 'dark' 
-                ? 'system' 
+        const newTheme = theme === 'light'
+            ? 'dark'
+            : theme === 'dark'
+                ? 'system'
                 : 'light';
-        
+
         dispatch(setTheme(newTheme));
-        
+
         if (newTheme === 'system') {
             const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
                 ? 'dark'
@@ -51,11 +51,11 @@ export function ThemeSwitcher() {
                 aria-label="Toggle theme"
             >
                 {theme === 'system' ? (
-                    <Monitor className="h-5 w-5" />
-                ) : theme === 'dark' ? (
-                    <Moon className="h-5 w-5" />
-                ) : (
                     <Sun className="h-5 w-5" />
+                ) : theme === 'dark' ? (
+                    <Monitor className="h-5 w-5" />
+                ) : (
+                    <Moon className="h-5 w-5" />
                 )}
             </Button>
             <LanguageSwitcher />
