@@ -1,18 +1,19 @@
 import Link from "next/link";
-import {Button} from "@/components/ui/button";
-import {useEffect, useState} from "react";
-import {pb} from "@/lib/pocketbase";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { pb } from "@/lib/pocketbase";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 export default function SudoNav() {
     const [isSudo, setIsSudo] = useState(false);
-
+    const { t } = useTranslation();
     useEffect(() => {
         const checkSudoState = async () => {
             const sudo = pb.authStore.model?.sudo;
             console.log("Sudo: " + sudo);
             if (sudo) {
                 setIsSudo(true);
-            }else {
+            } else {
                 setIsSudo(false);
             }
         }
@@ -27,7 +28,7 @@ export default function SudoNav() {
                     <div className="">
                         <Link href={"/counter/add"}>
                             <Button variant="outline" className="bg-white dark:bg-gray-700">
-                                Add Counter
+                                {t('addCounter.add')}
                             </Button>
                         </Link>
                     </div>

@@ -1,11 +1,12 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { pb } from '@/lib/pocketbase';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function AddCounterForm() {
     const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export default function AddCounterForm() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
     const { toast } = useToast();
+    const { t } = useTranslation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -22,19 +24,19 @@ export default function AddCounterForm() {
 
         try {
             await pb.collection('counter_type').create({
-                title: formData.title,
+                title: formData.title.charAt(0).toUpperCase() + formData.title.substring(1),
             });
 
             toast({
-                title: "Counter successfully added",
-                description: 'Welcome to Counter App!',
+                title: t('auth.success'),
+                description: t('auth.counterCreated'),
             });
 
             router.replace('/counter/');
         } catch (error) {
             toast({
                 title: 'Error',
-                description: error instanceof Error ? error.message : 'Something went wrong',
+                description: error instanceof Error ? error.message : t('common.genericError'),
                 variant: 'destructive',
             });
         } finally {
@@ -56,7 +58,7 @@ export default function AddCounterForm() {
             try {
                 if (!pb.authStore.isValid) {
                     router.replace('/auth/login');
-                } else if (!pb.authStore.model?.verified){
+                } else if (!pb.authStore.model?.verified) {
                     router.replace('/auth/verification');
                 } else if (!pb.authStore.model?.sudo) {
                     router.replace('/counter/');
@@ -77,12 +79,12 @@ export default function AddCounterForm() {
                 {isLoggedIn ? (
                     <div className="rounded-lg bg-white p-8 shadow-md dark:bg-gray-700">
                         <h2 className="mb-6 text-2xl font-bold text-center ">
-                            Add Counter
+                            {t('addCounter.add')}
                         </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block mb-2 text-sm font-medium dark:text-white">Title</label>
+                                <label className="block mb-2 text-sm font-medium dark:text-white">{t('addCounter.title')}</label>
                                 <Input
                                     type="text"
                                     name="title"
@@ -97,12 +99,12 @@ export default function AddCounterForm() {
                                 className="w-full dark:bg-gray-600 dark:text-white"
                                 disabled={isLoading}>
 
-                                {isLoading ? 'Loading...' : "Add counter"}
+                                {isLoading ? t('common.loading') : t('addCounter.add')}
                             </Button>
                         </form>
                     </div>
                 ) : (
-                    <div className="dark:text-white">Sorry you don't have enough rights to do this</div>
+                    <div className="dark:text-white">{t('auth.notEnoughRights')}</div>
                 )}
 
             </div>

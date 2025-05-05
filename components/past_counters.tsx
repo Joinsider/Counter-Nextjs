@@ -1,20 +1,22 @@
 // components/PastCounters.tsx
 'use client';
 
-import React, {useEffect, useState} from 'react';
-import {pb} from '@/lib/pocketbase';
-import {Counter} from "@/lib/types/counter";
-import {ChevronDownCircle, ChevronUpCircle} from '@geist-ui/icons';
+import React, { useEffect, useState } from 'react';
+import { pb } from '@/lib/pocketbase';
+import { Counter } from "@/lib/types/counter";
+import { ChevronDownCircle, ChevronUpCircle } from '@geist-ui/icons';
 import Link from "next/link";
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 interface CounterProps {
     typeId?: string;
 }
 
-export function PastCounters({typeId}: CounterProps) {
+export function PastCounters({ typeId }: CounterProps) {
     const [pastCounters, setPastCounters] = useState<Counter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(true);
+    const { t, currentLanguageState } = useTranslation();
 
     if (!typeId) {
         typeId = '3bqw5z4ht16sz75';
@@ -55,14 +57,14 @@ export function PastCounters({typeId}: CounterProps) {
     return (
         <div className="mt-12">
             <h2 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-4 text-center cursor-default" onClick={() => setIsCollapsed(!isCollapsed)}>
-                    Past Counters
+                {t('counter.pastCountersTitle')}
                 <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
                     className="ml-4 text-sm text-blue-600 hover:underline dark:text-blue-400"
                 >
                     {isCollapsed ?
-                    <ChevronDownCircle size={20} /> :
-                    <ChevronUpCircle size={20} />
+                        <ChevronDownCircle size={20} /> :
+                        <ChevronUpCircle size={20} />
                     }
                 </button>
             </h2>
@@ -76,10 +78,10 @@ export function PastCounters({typeId}: CounterProps) {
                             >
                                 <div className="flex justify-between items-center ">
                                     <div className="text-lg font-medium">
-                                        Value: {counter.value}
+                                        {t('counter.pastCountersValue')}: {counter.value}
                                     </div>
                                     <div className="text-sm p-1 text-gray-500 dark:text-gray-400">
-                                        {counter.date}
+                                        {new Date(counter.date).toLocaleDateString(currentLanguageState)}
                                     </div>
                                 </div>
                             </div>

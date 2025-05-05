@@ -2,17 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { pb } from '@/lib/pocketbase';
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function LogoutNav() {
     const router = useRouter();
+    const { t } = useTranslation();
 
     useEffect(() => {
         const logout = async () => {
             await pb.authStore.clear();
 
             const loggedIn = await pb.authStore.isValid;
-            if(!loggedIn) {
+            if (!loggedIn) {
                 router.replace('/');
             }
         }
@@ -22,7 +24,7 @@ export function LogoutNav() {
 
     return (
         <div className="flex items-center justify-center min-h-screen">
-            <p>Logging out...</p>
+            <p>{t('auth.loggingOut')}</p>
         </div>
     );
 }

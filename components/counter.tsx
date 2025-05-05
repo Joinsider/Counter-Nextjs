@@ -7,9 +7,9 @@ import { AppDispatch, RootState } from '@/lib/store/store';
 import { fetchCounter, incrementCounter, decrementCounter } from '@/lib/store/slices/counterSlice';
 import { CounterDisplay } from '@/components/ui/counter-display';
 import { CounterButton } from '@/components/ui/counter-button';
-import { APP_TITLE } from '@/lib/config';
 import { pb } from "@/lib/pocketbase";
 import { useRouter } from "next/navigation";
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 const PastCounters = dynamic(() => import("@/components/past_counters").then(mod => ({ default: mod.PastCounters })), {
     ssr: false
@@ -27,8 +27,10 @@ export function Counter({ typeId = '3bqw5z4ht16sz75' }: CounterProps) {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const { value, date, title, isLoading, error } = useSelector((state: RootState) => state.counter);
+    const { currentLanguage } = useSelector((state: RootState) => state.language);
     const [authChecked, setAuthChecked] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         let isSubscribed = true;
@@ -98,7 +100,7 @@ export function Counter({ typeId = '3bqw5z4ht16sz75' }: CounterProps) {
         <div className="flex flex-col space-y-4">
             <div className="flex flex-col items-center space-y-6">
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    {APP_TITLE}
+                    {t('common.appTitle')}
                 </h1>
 
                 {title && (
@@ -108,10 +110,10 @@ export function Counter({ typeId = '3bqw5z4ht16sz75' }: CounterProps) {
                 )}
 
                 <div className="flex flex-col items-center space-y-2">
-                    <CounterDisplay value={value}/>
+                    <CounterDisplay value={value} />
                     {date && (
                         <span className="text-sm text-gray-500">
-                            {date}
+                            {new Date(date).toLocaleDateString(currentLanguage)}
                         </span>
                     )}
                 </div>
@@ -121,22 +123,22 @@ export function Counter({ typeId = '3bqw5z4ht16sz75' }: CounterProps) {
                         <CounterButton
                             onClick={handleIncrement}
                             isLoading={isLoading}
-                            text="Increment"
+                            text={t('counter.increment')}
                             disabled={isLoading}
                         />
                         <CounterButton
                             onClick={handleDecrement}
                             isLoading={isLoading}
-                            text="Decrement"
+                            text={t('counter.decrement')}
                             disabled={isLoading || value === 0}
                         />
                     </div>
                 ) : (
-                    <div>Login to edit the counter</div>
+                    <div>{t('counter.loginToEdit')}</div>
                 )}
-                <PastCounters typeId={typeId}/>
+                <PastCounters typeId={typeId} />
             </div>
-            <LoadCounterStats typeId={typeId}/>
+            <LoadCounterStats typeId={typeId} />
         </div>
     );
 }

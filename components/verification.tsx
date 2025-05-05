@@ -1,13 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import {useEffect, useState} from 'react';
-import {pb} from '@/lib/pocketbase';
-import {useRouter} from "next/navigation";
+import { useEffect, useState } from 'react';
+import { pb } from '@/lib/pocketbase';
+import { useRouter } from "next/navigation";
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function VerificationNav() {
     const [isSent, setIsSent] = useState(false);
     const router = useRouter();
+    const { t } = useTranslation();
 
     useEffect(() => {
         let mounted = true;
@@ -49,17 +51,17 @@ export function VerificationNav() {
     }, []); // Empty dependency array
 
     return (
-    <div className="flex min-h-screen items-center justify-center flex-col bg-gray-100 dark:bg-gray-900 p-4">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md text-center">
-            <h1 className="text-2xl font-bold mb-4">
-                {isSent ? "Verification Email Sent" : "Checking E-Mail Verification Status"}
-            </h1>
-            {isSent && (
-                <Link href="/" className="text-blue-600 hover:underline dark:text-blue-400">
-                    Zur Startseite
-                </Link>
-            )}
+        <div className="flex min-h-screen items-center justify-center flex-col bg-gray-100 dark:bg-gray-900 p-4">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md text-center">
+                <h1 className="text-2xl font-bold mb-4">
+                    {isSent ? t('auth.emailVerificationMailSent') : t('auth.checkVerificationMail')}
+                </h1>
+                {isSent && (
+                    <Link href="/" className="text-blue-600 hover:underline dark:text-blue-400">
+                        {t('auth.goBackToStartpage')}
+                    </Link>
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
 }

@@ -1,20 +1,23 @@
 'use client';
 
-import React, {useRef, useState} from 'react';
-import {useRouter} from 'next/navigation';
-import {pb} from '@/lib/pocketbase';
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { pb } from '@/lib/pocketbase';
 import Link from 'next/link';
-import {Button} from './ui/button';
-import {Input} from './ui/input';
-import {useToast} from '@/hooks/use-toast';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { useToast } from '@/hooks/use-toast';
 import ReCAPTCHA from 'react-google-recaptcha';
+import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store/store';
 
 
 interface AuthFormProps {
     mode: 'login' | 'signup';
 }
 
-export default function AuthForm({mode}: AuthFormProps) {
+export default function AuthForm({ mode }: AuthFormProps) {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -24,10 +27,12 @@ export default function AuthForm({mode}: AuthFormProps) {
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
-    const {toast} = useToast();
+    const { toast } = useToast();
+    const { t } = useTranslation();
 
     const recaptchaRef = useRef<ReCAPTCHA>(null);
     const [isVerified, setIsVerified] = useState(false);
+    const theme = useSelector((state: RootState) => state.theme.theme);
 
     async function handleCaptchaSubmission(token: string | null) {
         try {
@@ -38,7 +43,7 @@ export default function AuthForm({mode}: AuthFormProps) {
                         Accept: "application/json",
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({token}),
+                    body: JSON.stringify({ token }),
                 });
                 setIsVerified(true);
             }
@@ -57,9 +62,9 @@ export default function AuthForm({mode}: AuthFormProps) {
         setIsError(false);
         setError("");
 
-        if(!isVerified) {
+        if (!isVerified) {
             setIsError(true);
-            const error = "Please verify the captcha";
+            const error = t('auth.captchaVerification');
             setError(error);
             toast({
                 title: 'Error',
@@ -75,12 +80,12 @@ export default function AuthForm({mode}: AuthFormProps) {
                 const res = await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
                 const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
-                if(formData.password.length < 8 || formData.password.length > 70) {
+                if (formData.password.length < 8 || formData.password.length > 70) {
                     setIsError(true);
-                    const error = "Password must be between 8 and 70 characters";
+                    const error = t('auth.passwordRequirements');
                     setError(error);
                     throw new Error(error);
-                }else if (regex.test(formData.email)) {
+                } else if (regex.test(formData.email)) {
                     const res = await pb.collection('users').create({
                         email: formData.email,
                         password: formData.password,
@@ -94,15 +99,15 @@ export default function AuthForm({mode}: AuthFormProps) {
                     })
                 } else {
                     setIsError(true);
-                    const error = "Email must be a i24... e-mail";
+                    const error = t('auth.emailRequirements');
                     setError(error);
                     throw new Error(error);
                 }
             }
 
             toast({
-                title: mode === 'login' ? 'Logged in successfully' : 'Account created successfully',
-                description: 'Welcome to Counter App!',
+                title: mode === 'login' ? t('auth.loggedInSuccess') : t('auth.accountCreatedSuccess'),
+                description: t('auth.welcomeMessage'),
             });
 
             const verified = pb.authStore.model?.verified;
@@ -114,11 +119,11 @@ export default function AuthForm({mode}: AuthFormProps) {
         } catch (error) {
             toast({
                 title: 'Error',
-                description: error instanceof Error ? error.message : 'Something went wrong',
+                description: error instanceof Error ? error.message : t('auth.somethingWentWrong'),
                 variant: 'destructive',
             });
             setIsError(true);
-            setError(error instanceof Error ? error.message : 'Something went wrong');
+            setError(error instanceof Error ? error.message : t('auth.somethingWentWrong'));
         } finally {
             setIsLoading(false);
         }
@@ -140,13 +145,13 @@ export default function AuthForm({mode}: AuthFormProps) {
             <div className="w-full max-w-md">
                 <div className="rounded-lg bg-white p-8 shadow-md dark:bg-zinc-800">
                     <h2 className="mb-6 text-2xl font-bold text-center">
-                        {mode === 'login' ? 'Sign In' : 'Sign Up'}
+                        {mode === 'login' ? t('auth.login') : t('auth.signup')}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {mode === 'signup' && (
                             <div>
-                                <label className="block mb-2 text-sm font-medium">Username</label>
+                                <label className="block mb-2 text-sm font-medium">{t('auth.username')}</label>
                                 <Input
                                     type="text"
                                     name="username"
@@ -158,7 +163,7 @@ export default function AuthForm({mode}: AuthFormProps) {
                         )}
 
                         <div>
-                            <label className="block mb-2 text-sm font-medium">Email</label>
+                            <label className="block mb-2 text-sm font-medium">{t('auth.email')}</label>
                             <Input
                                 type="email"
                                 name="email"
@@ -169,7 +174,7 @@ export default function AuthForm({mode}: AuthFormProps) {
                         </div>
 
                         <div>
-                            <label className="block mb-2 text-sm font-medium">Password</label>
+                            <label className="block mb-2 text-sm font-medium">{t('auth.password')}</label>
                             <Input
                                 type="password"
                                 name="password"
@@ -184,46 +189,53 @@ export default function AuthForm({mode}: AuthFormProps) {
                         <div>
                             {isError && (
                                 <div className="text-red-500 dark:text-red-400">
-                                    Error: {error}
+                                    {t('common.error')}: {error}
                                 </div>
                             )}
                         </div>
 
+
                         <ReCAPTCHA
+                            key={theme === 'system' 
+                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+                                : theme}
                             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
                             ref={recaptchaRef}
+                            theme={theme === 'system'
+                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                                : theme as 'light' | 'dark'}
                             onChange={handleChange}
                             onExpired={handleExpired}
                         />
 
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? 'Loading...' : mode === 'login' ? 'Sign In' : 'Sign Up'}
-                        </Button>
-                    </form>
-
-                    <div className="mt-4 text-center flex flex-col">
-                        <Link
-                            href={mode === 'login' ? '/auth/signup' : '/auth/login'}
-                            className="text-blue-600 hover:underline dark:text-blue-400"
-                        >
-                            {mode === 'login'
-                                ? "Need an account? Sign up"
-                                : "Already have an account? Sign in"}
-                        </Link>
-                        {mode === 'login' && (
-                            <Link
-                                href="/auth/reset"
-                                className="text-blue-600 hover:underline dark:text-blue-400"
+                        <div className="space-y-2">
+                            <Button
+                                type="submit"
+                                className="w-full"
+                                disabled={isLoading}
                             >
-                                Forgot Password
-                            </Link>
-                        )}
-                    </div>
+                                {isLoading ? t('common.loading') : mode === 'login' ? t('auth.login') : t('auth.signup')}
+                            </Button>
 
+                            <div className="text-center">
+                                {mode === 'login' ? (
+                                    <>
+                                        <Link href="/auth/signup" className="text-blue-600 hover:underline dark:text-blue-400">
+                                            {t('auth.signup')}
+                                        </Link>
+                                        <br />
+                                        <Link href="/auth/reset" className="text-blue-600 hover:underline dark:text-blue-400">
+                                            {t('auth.forgotPassword')}
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <Link href="/auth/login" className="text-blue-600 hover:underline dark:text-blue-400">
+                                        {t('auth.haveAccount')}
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
