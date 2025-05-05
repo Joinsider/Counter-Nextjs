@@ -1,4 +1,4 @@
-const { setupDevPlatform } = require('@cloudflare/next-on-pages/next-dev');
+
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -22,7 +22,6 @@ const nextConfig = {
 
 // Use async function wrapper for await
 async function configWrapper() {
-  await setupDevPlatform();
   return nextConfig;
 }
 
