@@ -1,10 +1,13 @@
 'use client';
 
-import React, {useEffect, useRef, useState} from 'react';
-import {pb} from '@/lib/pocketbase';
-import {Button} from './ui/button';
-import {Input} from './ui/input';
-import {ScrollArea} from './ui/scroll-area';
+import React, { useEffect, useRef, useState } from 'react';
+import { pb } from '@/lib/pocketbase';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { ScrollArea } from './ui/scroll-area';
+import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store/store';
 
 interface Message {
     id: string;
@@ -32,7 +35,7 @@ interface ChatProps {
 }
 
 
-export function Chat({typeId}: ChatProps) {
+export function Chat({ typeId }: ChatProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [usernames, setUsernames] = useState<Record<string, string>>({});
     const [failedUserFetches, setFailedUserFetches] = useState<Record<string, number>>({});
@@ -41,6 +44,8 @@ export function Chat({typeId}: ChatProps) {
     const [error, setError] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const { currentLanguage } = useSelector((state: RootState) => state.language);
+    const { t } = useTranslation();
 
     const [formData, setFormData] = useState({
         message: ''
@@ -52,7 +57,7 @@ export function Chat({typeId}: ChatProps) {
 
         try {
             const userInfo = await pb.collection('user_info').getFirstListItem<Usernames>(`userId="${userId}"`);
-            setUsernames(prev => ({...prev, [userId]: userInfo.username}));
+            setUsernames(prev => ({ ...prev, [userId]: userInfo.username }));
             return userInfo.username;
         } catch (err) {
             setFailedUserFetches(prev => ({
@@ -108,7 +113,7 @@ export function Chat({typeId}: ChatProps) {
         fetchMessages();
 
         // Subscribe to realtime updates
-        const unsubscribePromise = pb.collection('messages').subscribe<Message>('*', async ({action, record}) => {
+        const unsubscribePromise = pb.collection('messages').subscribe<Message>('*', async ({ action, record }) => {
             if (record.typeId === typeId) {
                 if (action === 'create') {
                     if (!usernames[record.userId]) {
@@ -139,9 +144,10 @@ export function Chat({typeId}: ChatProps) {
 
         try {
             const uid = await pb.authStore.model?.id;
-            if (formData.message.length === 0) {
+            const trimmedMessage = formData.message.trim();
+            if (formData.message.length === 0 || trimmedMessage.length === 0) {
                 setIsError(true);
-                setError("Message must contain at least one non-whitespace character");
+                setError(t('chat.emptyMessage'));
                 return;
             } else {
                 setIsError(false);
@@ -158,7 +164,7 @@ export function Chat({typeId}: ChatProps) {
         } catch (err) {
             setError('Failed to send message');
         } finally {
-            setFormData({message: ''});
+            setFormData({ message: '' });
             setTimeout(scrollToBottom, 100)
         }
     };
@@ -181,7 +187,7 @@ export function Chat({typeId}: ChatProps) {
                 {
                     messages.length === 0 && (
                         <div className="text-center text-gray-500 dark:text-gray-400">
-                            No messages found
+                            {t('chat.noMessages')}
                         </div>
                     )
                 }
@@ -192,20 +198,20 @@ export function Chat({typeId}: ChatProps) {
                             className={`flex flex-col ${message.userId === pb.authStore.model?.id
                                 ? 'items-end'
                                 : 'items-start'
-                            }`}
+                                }`}
                         >
                             <div
                                 className={`max-w-[80%] rounded-lg p-3 ${message.userId === pb.authStore.model?.id
                                     ? 'bg-blue-500 text-white drop-shadow-xl'
                                     : 'bg-gray-100 drop-shadow-xl dark:bg-gray-700'
-                                }`}
+                                    }`}
                             >
                                 <div className="font-semibold text-sm mb-1">
-                                    {usernames[message.userId] || 'Unknown User'}
+                                    {usernames[message.userId] || t('chat.unknownUser')}
                                 </div>
                                 <div className="break-words">{message.message}</div>
                                 <div className="text-xs mt-1 opacity-70">
-                                    {new Date(message.created).toLocaleString()}
+                                    {new Date(message.created).toLocaleString(currentLanguage)}
                                 </div>
                             </div>
                         </div>
@@ -219,17 +225,17 @@ export function Chat({typeId}: ChatProps) {
                         type="text"
                         name="message"
                         value={formData.message}
-                        placeholder="Type your message..."
+                        placeholder={t('chat.typeMessage')}
                         className="flex-1"
                         minLength={1}
                         required={true}
-                        onChange={(e) => setFormData({...formData, message: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     />
                 </div>
-                <Button type="submit" className="mt-2">Send Message</Button>
+                <Button type="submit" className="mt-2">{t('chat.send')}</Button>
                 {isError && (
                     <div className="text-red-500 dark:text-red-400">
-                        Error: {error}
+                        {error}
                     </div>
                 )}
             </form>

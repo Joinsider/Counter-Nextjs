@@ -1,20 +1,24 @@
 'use client';
 
-import React, {useRef, useState} from 'react';
-import {useParams, useRouter} from 'next/navigation';
-import {pb} from '@/lib/pocketbase';
+import React, { useRef, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { pb } from '@/lib/pocketbase';
 import Link from 'next/link';
-import {Button} from './ui/button';
-import {Input} from './ui/input';
-import {useToast} from '@/hooks/use-toast';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { useToast } from '@/hooks/use-toast';
 import ReCAPTCHA from "react-google-recaptcha";
+import { useTranslation } from '@/lib/hooks/useTranslation';
+import { ThemeSwitcher } from './themeSwitcher';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store/store';
 
 interface AuthFormProps {
     mode: 'request' | 'reset';
     token?: string;
 }
 
-export default function ResetForm({mode, token}: AuthFormProps) {
+export default function ResetForm({ mode, token }: AuthFormProps) {
 
     const [formData, setFormData] = useState({
         email: '',
@@ -25,9 +29,11 @@ export default function ResetForm({mode, token}: AuthFormProps) {
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState("");
     const router = useRouter();
-    const {toast} = useToast();
+    const { toast } = useToast();
     const [isVerified, setIsVerified] = useState(false);
     const recaptchaRef = useRef<ReCAPTCHA>(null);
+    const { t } = useTranslation();
+    const theme = useSelector((state: RootState) => state.theme.theme);
 
     async function handleCaptchaSubmission(token: string | null) {
         try {
@@ -38,7 +44,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                         Accept: "application/json",
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({token}),
+                    body: JSON.stringify({ token }),
                 });
                 setIsVerified(true);
             }
@@ -57,9 +63,9 @@ export default function ResetForm({mode, token}: AuthFormProps) {
         setIsError(false);
         setError("");
 
-        if(!isVerified) {
+        if (!isVerified) {
             setIsError(true);
-            const error = "Please verify the captcha";
+            const error = t('auth.captchaError');
             setError(error);
             toast({
                 title: 'Error',
@@ -77,7 +83,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                     await pb.collection('users').requestPasswordReset(formData.email);
                 } else {
                     setIsError(true);
-                    const error = "Email must be a i24... e-mail";
+                    const error = t('auth.emailRequirements');
                     setError(error);
                     throw new Error(error);
                 }
@@ -94,15 +100,15 @@ export default function ResetForm({mode, token}: AuthFormProps) {
             }
 
             toast({
-                title: mode === 'request' ? 'Password reset mail was sent' : 'Password reset was successful',
-                description: 'Welcome to Counter App!',
+                title: mode === 'request' ? t('passwordResetMailSentSuccess') : t('passwordResetMailSentError'),
+                description: t('main.title'),
             });
 
 
         } catch (error) {
             toast({
                 title: 'Error',
-                description: error instanceof Error ? error.message : 'Something went wrong',
+                description: error instanceof Error ? error.message : t('common.genericError'),
                 variant: 'destructive',
             });
         } finally {
@@ -126,13 +132,13 @@ export default function ResetForm({mode, token}: AuthFormProps) {
             <div className="w-full max-w-md">
                 <div className="rounded-lg bg-white p-8 shadow-md dark:bg-zinc-800">
                     <h2 className="mb-6 text-2xl font-bold text-center">
-                        {mode === 'request' ? 'Request password reset' : 'Reset Password'}
+                        {mode === 'request' ? t('requestPasswordReset') : t('resetPassword')}
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {mode === 'request' && (
                             <div>
-                                <label className="block mb-2 text-sm font-medium">Email</label>
+                                <label className="block mb-2 text-sm font-medium">{t('auth.email')}</label>
                                 <Input
                                     type="email"
                                     name="email"
@@ -145,7 +151,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                         {mode === 'reset' && (
                             <div>
                                 <div>
-                                    <label className="block mb-2 text-sm font-medium">Password</label>
+                                    <label className="block mb-2 text-sm font-medium">{t('auth.password')}</label>
                                     <Input
                                         type="password"
                                         name="password"
@@ -157,7 +163,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block mb-2 text-sm font-medium">Password</label>
+                                    <label className="block mb-2 text-sm font-medium">{t('auth.repeatPassword')}</label>
                                     <Input
                                         type="password"
                                         name="repeatPassword"
@@ -179,8 +185,14 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                         </div>
 
                         <ReCAPTCHA
+                            key={theme === 'system'
+                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                                : theme}
                             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
                             ref={recaptchaRef}
+                            theme={theme === 'system'
+                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                                : theme as 'light' | 'dark'}
                             onChange={handleChange}
                             onExpired={handleExpired} />
 
@@ -189,7 +201,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                             className="w-full"
                             disabled={isLoading}
                         >
-                            {isLoading ? 'Loading...' : mode === 'request' ? 'Request Reset Email' : 'Reset Password'}
+                            {isLoading ? 'Loading...' : mode === 'request' ? t('auth.requestPasswordReset') : t('auth.resetPassword')}
                         </Button>
                     </form>
 
@@ -198,7 +210,7 @@ export default function ResetForm({mode, token}: AuthFormProps) {
                             <Link
                                 href="/auth/login"
                                 className="text-blue-600 hover:underline dark:text-blue-400">
-                                Login
+                                {t('auth.login')}
                             </Link>
                         </div>
                     )}

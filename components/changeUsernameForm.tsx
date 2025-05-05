@@ -6,6 +6,7 @@ import {pb} from '@/lib/pocketbase';
 import {Button} from './ui/button';
 import {Input} from './ui/input';
 import {useToast} from '@/hooks/use-toast';
+import {useTranslation} from '@/lib/hooks/useTranslation';
 
 export default function ChangeUsernameForm() {
     const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function ChangeUsernameForm() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
     const {toast} = useToast();
+    const {t} = useTranslation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -82,12 +84,12 @@ export default function ChangeUsernameForm() {
                 {isLoggedIn ? (
                     <div className="rounded-lg bg-white p-8 shadow-md dark:bg-gray-700">
                         <h2 className="mb-6 text-2xl font-bold text-center ">
-                            Change Username
+                            {t('auth.changeUsername')}
                         </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block mb-2 text-sm font-medium dark:text-white">Current username</label>
+                                <label className="block mb-2 text-sm font-medium dark:text-white">{t('auth.currentUsername')}</label>
                                 <Input
                                     type="text"
                                     name="currentUsername"
@@ -96,7 +98,7 @@ export default function ChangeUsernameForm() {
                                 />
                             </div>
                             <div>
-                                <label className="block mb-2 text-sm font-medium dark:text-white">New username</label>
+                                <label className="block mb-2 text-sm font-medium dark:text-white">{t('auth.newUsername')}</label>
                                 <Input
                                     type="text"
                                     name="username"
@@ -111,7 +113,7 @@ export default function ChangeUsernameForm() {
                                 className="w-full dark:bg-gray-600 dark:text-white"
                                 disabled={isLoading}>
 
-                                {isLoading ? 'Loading...' : "Change Username"}
+                                {isLoading ? t('commont.loading') : t('auth.changeUsername')}
                             </Button>
                         </form>
                     </div>

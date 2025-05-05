@@ -1,0 +1,80 @@
+{
+  "common": {
+    "counter": "Counter",
+    "add": "Add",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "genericError": "Something went wrong",
+    "appTitle": "Counter App"
+  },
+  "counter": {
+    "title": "Counter",
+    "loginToEdit": "Login to edit the counter",
+    "increment": "Increment",
+    "decrement": "Decrement",
+    "pastCountersTitle": "Past Counters",
+    "pastCountersValue": "Value"
+  },
+  "main": {
+    "title": "Welcome to our Counter App!",
+    "description": "Please login using your i24 e-mail address.",
+    "counterButton": "Go to the counter"
+  },
+  "addCounter": {
+    "title": "Title",
+    "add": "Add Counter"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "loggingOut": "Logging out...",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "repeatPassword": "Repeat Password",
+    "username": "Username",
+    "signIn": "Sign In",
+    "welcomeMessage": "Welcome to Counter App!",
+    "loggedInSuccess": "Logged in successfully",
+    "accountCreatedSuccess": "Account created successfully",
+    "passwordRequirements": "Password must be between 8 and 70 characters",
+    "emailRequirements": "Email must be a i24... e-mail",
+    "captchaError": "Please verify the captcha",
+    "somethingWentWrong": "Something went wrong",
+    "forgotPassword": "Forgot Password",
+    "notEnoughRights": "Not enough rights",
+    "changeUsername": "Change Username",
+    "currentUsername": "Current Username",
+    "newUsername": "New Username",
+    "requestPasswordReset": "Request Password Reset",
+    "resetPassword": "Reset Password",
+    "goBackToStartpage": "Go back to startpage",
+    "emailVerificationMailSent": "Email verification mail sent successfully",
+    "checkVerificationMail": "Checking E-mail verification status",
+    "passwordResetMailSentError": "Password reset mail sent successfully",
+    "passwordResetMailSentSuccess": "Password reset mail sent successfully"
+  },
+  "navigation": {
+    "viewCounters": "All Counters",
+    "closeSideMenu": "Close Side Menu"
+  },
+  "chat": {
+    "title": "Chat",
+    "description": "Chat with other users",
+    "send": "Send",
+    "message": "Message",
+    "noMessages": "No messages yet",
+    "unknownUser": "Unknown User",
+    "typeMessage": "Type a message...",
+    "emptyMessage": "Error: Message cannot be empty"
+  },
+  "maintenance": {
+    "title": "Maintenance Mode",
+    "message": "The site is currently under maintenance. Please try again later."
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "common": {
+    "counter": "Zähler",
+    "add": "Hinzufügen",
+    "addCounter": "Zähler hinzufügen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolgreich",
+    "genericError": "Etwas ist schief gelaufen",
+    "appTitle": "Counter App",
+    "captchaError": "Bitte bestätigen Sie das Captcha"
+  },
+  "counter": {
+    "title": "Zähler",
+    "increment": "Erhöhen",
+    "decrement": "Verringern",
+    "loginToEdit": "Anmelden, um den Zähler zu bearbeiten",
+    "noCounters": "Keine Zähler gefunden",
+    "addCounter": "Zähler hinzufügen",
+    "pastCountersTitle": "Ältere Zähler",
+    "pastCountersValue": "Wert"
+  },
+  "addCounter": {
+    "title": "Titel",
+    "add": "Zähler hinzufügen"
+  },
+  "main": {
+    "title": "Willkommen bei unserer Counter App!",
+    "description": "Bitte melden Sie sich mit Ihrer i24 E-Mail-Addresse an.",
+    "counterButton": "Zu den Zählern gehen"
+  },
+  "auth": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "loggingOut": "Abmeldung...",
+    "signup": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "repeatPassword": "Passwort wiederholen",
+    "username": "Benutzername",
+    "signIn": "Anmelden",
+    "welcomeMessage": "Willkommen bei Counter App!",
+    "loggedInSuccess": "Erfolgreich angemeldet",
+    "accountCreatedSuccess": "Konto erfolgreich erstellt",
+    "passwordRequirements": "Das Passwort muss zwischen 8 und 70 Zeichen lang sein",
+    "emailRequirements": "Die E-Mail muss eine i24... E-Mail sein",
+    "captchaError": "Bitte bestätigen Sie das Captcha",
+    "somethingWentWrong": "Etwas ist schief gelaufen",
+    "forgotPassword": "Passwort vergessen?",
+    "notEnoughRights": "Sie haben nicht genügend Rechte",
+    "changeUsername": "Benutzername ändern",
+    "currentUsername": "Aktueller Benutzername",
+    "newUsername": "Neuer Benutzername",
+    "requestPasswordReset": "Passwort zurücksetzen anfordern",
+    "checkVerificationMail": "E-Mail-Verifizierung wird überprüft",
+    "goBackToStartpage": "Zurück zur Startseite",
+    "emailVerificationMailSent": "E-Mail Verifikation erfolgreich gesendet",
+    "passwordResetMailSentSuccess": "Passwort zurücksetzen E-Mail erfolgreich gesendet",
+    "passwordResetMailSentError": "Passwort zurücksetzen E-Mail konnte nicht gesendet werden"
+  },
+  "navigation": {
+    "viewCounters": "Alle Zähler",
+    "closeSideMenu": "Menü schließen"
+  },
+  "chat": {
+    "title": "Chat",
+    "description": "Chat mit anderen Benutzern",
+    "send": "Senden",
+    "message": "Nachricht",
+    "noMessages": "Keine Nachrichten gefunden",
+    "unknownUser": "Unbekannter Benutzer",
+    "typeMessage": "Nachricht tippen...",
+    "emptyMessage": "Fehler: Die Nachricht darf nicht leer sein"
+  },
+  "maintenance": {
+    "title": "Wartungsmodus",
+    "message": "Die Seite befindet sich derzeit in Wartung. Bitte versuchen Sie es später erneut."
+  }
+}
