@@ -57,7 +57,7 @@ export function VerificationNav() {
                     {isSent ? t('auth.emailVerificationMailSent') : t('auth.checkVerificationMail')}
                 </h1>
                 {isSent && (
-                    <Link href="/" className="text-blue-600 hover:underline dark:text-blue-400">
+                    <Link href="/public" className="text-blue-600 hover:underline dark:text-blue-400">
                         {t('auth.goBackToStartpage')}
                     </Link>
                 )}

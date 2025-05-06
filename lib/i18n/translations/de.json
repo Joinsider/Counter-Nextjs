@@ -28,6 +28,9 @@
     "title": "Titel",
     "add": "Zähler hinzufügen"
   },
+  "addLecturer": {
+    "name": "Dozentenname"
+  },
   "main": {
     "title": "Willkommen bei unserer Counter App!",
     "description": "Bitte melden Sie sich mit Ihrer i24 E-Mail-Addresse an.",

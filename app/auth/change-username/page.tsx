@@ -1,6 +1,6 @@
 'use client'
 
-import ChangeUsernameForm from "@/components/changeUsernameForm";
+import ChangeUsernameForm from "@/components/auth/changeUsernameForm";
 import {Button} from "@/components/ui/button";
 import {ArrowLeft} from '@geist-ui/icons';
 import {useRouter} from "next/navigation";

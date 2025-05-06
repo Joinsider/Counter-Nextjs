@@ -29,6 +29,9 @@
     "title": "Title",
     "add": "Add Counter"
   },
+  "addLecturer": {
+    "name": "Lecturer Name"
+  },
   "auth": {
     "login": "Login",
     "logout": "Logout",

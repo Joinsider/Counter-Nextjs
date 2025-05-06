@@ -1,6 +1,6 @@
 'use client'
 
-import ResetForm from "@/components/resetForm";
+import ResetForm from "@/components/auth/resetForm";
 import {useParams} from "next/navigation";
 
 

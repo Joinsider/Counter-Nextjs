@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useState} from 'react';
-import {AuthNav} from '@/components/authNav';
+import {AuthNav} from '@/components/auth/authNav';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Maintenance} from '@/lib/types/maintenance';
