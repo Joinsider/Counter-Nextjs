@@ -23,6 +23,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className=''>
+      <head>
+        <link
+          rel="preload"
+          href="/counter.webp"
+          as="image"
+          type="image/webp"
+        />
+      </head>
       <body className={inter.className}>
         <Providers>
           <NextUIProvider>
