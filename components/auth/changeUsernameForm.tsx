@@ -1,12 +1,12 @@
 'use client';
 
-import {useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
-import {pb} from '@/lib/pocketbase';
-import {Button} from '../ui/button';
-import {Input} from '../ui/input';
-import {useToast} from '@/hooks/use-toast';
-import {useTranslation} from '@/lib/hooks/useTranslation';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { pb } from '@/lib/pocketbase';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function ChangeUsernameForm() {
     const [formData, setFormData] = useState({
@@ -16,8 +16,8 @@ export default function ChangeUsernameForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const router = useRouter();
-    const {toast} = useToast();
-    const {t} = useTranslation();
+    const { toast } = useToast();
+    const { t } = useTranslation();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
