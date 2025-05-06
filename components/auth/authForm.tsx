@@ -196,8 +196,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
 
                         <ReCAPTCHA
-                            key={theme === 'system' 
-                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+                            key={theme === 'system'
+                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                                 : theme}
                             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
                             ref={recaptchaRef}
@@ -230,7 +230,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                                     </>
                                 ) : (
                                     <Link href="/auth/login" className="text-blue-600 hover:underline dark:text-blue-400">
-                                        {t('auth.haveAccount')}
+                                        {t('auth.login')}
                                     </Link>
                                 )}
                             </div>
