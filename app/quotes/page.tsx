@@ -7,8 +7,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fetchLecturers, addLecturer} from '@/lib/store/slices/lecturerSlice';
 import {AppDispatch, RootState} from '@/lib/store/store';
 import Link from 'next/link';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 import {checkAuthState} from "@/hooks/check-auth-state";
 import {SideMenu} from "@/components/SideMenu";
 import {AuthNav} from "@/components/auth/authNav";
@@ -94,23 +94,25 @@ export default function LecturersPage() {
                     {status === 'loading' && lecturers.length === 0 ? (
                         <p>{t('common.loading')}</p>
                     ) : lecturers.length > 0 ? (
-                        <ul className="border rounded divide-y">
-                            {lecturers.map((lecturer) => (
-                                <li key={lecturer.id}>
-                                    <Link
-                                        href={`/quotes/${lecturer.id}`}
-                                        className="p-4 flex justify-between items-center block hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
-                                    >
-                                        <span>{lecturer.name}</span>
-                                        <span className="text-gray-500 text-sm">
+                        <div className={"pb-16"}>
+                            <ul className="border rounded divide-y">
+                                {lecturers.map((lecturer) => (
+                                    <li key={lecturer.id}>
+                                        <Link
+                                            href={`/quotes/${lecturer.id}`}
+                                            className="p-4 flex justify-between items-center block hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors"
+                                        >
+                                            <span>{lecturer.name}</span>
+                                            <span className="text-gray-500 text-sm">
                                                                         {new Date(lecturer.created).toLocaleDateString()}
                                                                     </span>
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     ) : (
-                        <p className="text-gray-500">{t('counter.noCounters')}</p>
+                        <p className="text-gray-500 pb-16">{t('counter.noCounters')}</p>
                     )}
                 </div>
             </div>
