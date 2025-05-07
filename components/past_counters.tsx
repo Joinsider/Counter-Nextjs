@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { pb } from '@/lib/pocketbase';
 import { Counter } from "@/lib/types/counter";
-import { ChevronDownCircle, ChevronUpCircle, ChevronLeft, ChevronRight } from '@geist-ui/icons';
+import { ChevronDownCircle, ChevronUpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 interface CounterProps {
@@ -16,7 +16,7 @@ export function PastCounters({ typeId }: CounterProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [isCollapsed, setIsCollapsed] = useState(true);
     const [hoveredDate, setHoveredDate] = useState<string | null>(null);
-    const { t, currentLanguageState } = useTranslation();
+    const { t } = useTranslation();
     
     // State for current displayed month and year
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());

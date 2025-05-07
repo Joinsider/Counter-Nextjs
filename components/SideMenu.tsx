@@ -7,6 +7,8 @@ import {fetchCounterTypes, toggleCollapse, setCollapsed} from '@/lib/store/slice
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useTranslation} from '@/lib/hooks/useTranslation';
+import {PanelLeftClose, PanelLeftOpen} from "lucide-react";
+import {Button} from "@/components/ui/button";
 
 export function SideMenu() {
     const dispatch = useDispatch<AppDispatch>();
@@ -21,13 +23,12 @@ export function SideMenu() {
 
     return (
         <>
-            <button
+            <Button
                 onClick={() => dispatch(toggleCollapse())}
-                className={isCollapsed ? "fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-300 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors size-2 shadow-lg" : "fixed top-4 left-4 z-50 p-2 rounded-lg hover:bg-gray-200 bg-gray-300 dark:bg-gray-600 dark:hover:bg-gray-500 transition-colors size-2"}
+                className={isCollapsed ? "fixed top-4 left-4 z-50 p-2 rounded-lg  transition-colors size-2 shadow-lg" : "fixed top-4 left-4 z-50 p-2 rounded-lg transition-colors size-2"}
                 aria-label={isCollapsed ? 'Expand menu' : 'Collapse menu'}>
-                <span
-                    className="w-6 h-6 font-bold">&#9776;</span> {isCollapsed ? t('navigation.viewCounters') : t('navigation.closeSideMenu')}
-            </button>
+                {isCollapsed ? <PanelLeftOpen/> : <PanelLeftClose/>}
+            </Button>
 
             {!isCollapsed && (
                 <div
@@ -50,7 +51,7 @@ export function SideMenu() {
                     ) : (
                         <div className={`space-y-2 ${isCollapsed ? 'invisible' : 'visible'}`}>
                             <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2 px-2">
-                                {t('navigation.quotes') || 'Quotes'}
+                                {t('navigation.counter') || 'Quotes'}
                             </h3>
                             {types.map((type) => (
                                 <Link

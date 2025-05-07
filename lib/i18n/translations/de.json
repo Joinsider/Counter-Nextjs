@@ -96,6 +96,7 @@
     "firstMentioned": "Erstmals erwähnt",
     "firstMentionedOn": "Erstmals erwähnt am",
     "quotesList": "Zitatliste",
-    "noQuotes": "Keine Zitate für diesen Dozenten gefunden"
+    "noQuotes": "Keine Zitate für diesen Dozenten gefunden",
+    "addLecturer": "Dozenten hinzufügen"
   }
 }

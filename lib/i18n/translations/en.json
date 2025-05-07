@@ -93,6 +93,7 @@
     "firstMentioned": "First Mentioned Date",
     "firstMentionedOn": "First mentioned on",
     "quotesList": "Quotes List",
-    "noQuotes": "No quotes available for this lecturer"
+    "noQuotes": "No quotes available for this lecturer",
+    "addLecturer": "Add Lecturer"
   }
 }
