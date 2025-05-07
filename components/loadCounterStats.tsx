@@ -1,8 +1,8 @@
 'use client'
 
 import AreaChartPlot from "@/components/lineChart";
-import {useEffect, useState} from "react";
-import {pb} from "@/lib/pocketbase";
+import { useEffect, useState } from "react";
+import { pb } from "@/lib/pocketbase";
 
 interface ChartData {
     day: string;
@@ -13,7 +13,7 @@ interface CounterProps {
     typeId?: string;
 }
 
-export default function LoadCounterStats({typeId}: CounterProps) {
+export default function LoadCounterStats({ typeId }: CounterProps) {
     const [data, setData] = useState<ChartData[]>([]);
 
     const thirtyDaysAgo = new Date();
@@ -34,7 +34,7 @@ export default function LoadCounterStats({typeId}: CounterProps) {
                     }));
 
                     // Create an array of the last 30 days
-                    const last30Days = Array.from({length: 30}, (_, i) => {
+                    const last30Days = Array.from({ length: 30 }, (_, i) => {
                         const date = new Date();
                         date.setDate(date.getDate() - i);
                         return {
@@ -63,7 +63,7 @@ export default function LoadCounterStats({typeId}: CounterProps) {
     return (
         <div>
             <div className="w-1.0 h-80 bg-gray-200 dark:bg-gray-700 rounded pt-2 pb-2 drop-shadow-xl">
-                <AreaChartPlot data={data}/>
+                <AreaChartPlot data={data} />
             </div>
         </div>
     );

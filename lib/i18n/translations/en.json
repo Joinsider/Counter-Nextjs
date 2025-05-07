@@ -29,6 +29,9 @@
     "title": "Title",
     "add": "Add Counter"
   },
+  "addLecturer": {
+    "name": "Lecturer Name"
+  },
   "auth": {
     "login": "Login",
     "logout": "Logout",
@@ -61,7 +64,13 @@
   },
   "navigation": {
     "viewCounters": "All Counters",
-    "closeSideMenu": "Close Side Menu"
+    "closeSideMenu": "Close Side Menu",
+    "quotes": "Quotes",
+    "lecturers": "Lecturers",
+    "lecturer": "Lecturer",
+    "lecturerName": "Lecturer Name",
+    "counter": "Counter",
+    "viewQuotes": "View Quotes"
   },
   "chat": {
     "title": "Chat",
@@ -76,5 +85,15 @@
   "maintenance": {
     "title": "Maintenance Mode",
     "message": "The site is currently under maintenance. Please try again later."
+  },
+  "quotes": {
+    "quotesCount": "quotes",
+    "addQuote": "Add Quote",
+    "quoteText": "Quote Text",
+    "firstMentioned": "First Mentioned Date",
+    "firstMentionedOn": "First mentioned on",
+    "quotesList": "Quotes List",
+    "noQuotes": "No quotes available for this lecturer",
+    "addLecturer": "Add Lecturer"
   }
 }

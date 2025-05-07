@@ -3,9 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { pb } from '@/lib/pocketbase';
-import { Button } from './ui/button';
-import { Settings } from '@geist-ui/icons';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { Button } from '../ui/button';
+import { Settings } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { useTranslation } from '@/lib/hooks/useTranslation'; // Add this line to import useTranslation from your translation file, e.g., useTranslation.tsx or similar
 
 export function AuthNav() {
@@ -43,7 +43,7 @@ export function AuthNav() {
                     isLoggedIn ? (
                         <Popover>
                             <PopoverTrigger>
-                                <Button variant="outline" className="bg-white dark:bg-gray-700">
+                                <Button variant="outline" className="">
                                     <Settings size={20} />
                                 </Button>
                             </PopoverTrigger>

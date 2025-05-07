@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { pb } from '@/lib/pocketbase';
 import Link from 'next/link';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 import { useToast } from '@/hooks/use-toast';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { useTranslation } from '@/lib/hooks/useTranslation';
@@ -196,8 +196,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
 
                         <ReCAPTCHA
-                            key={theme === 'system' 
-                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+                            key={theme === 'system'
+                                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                                 : theme}
                             sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ""}
                             ref={recaptchaRef}
@@ -230,7 +230,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
                                     </>
                                 ) : (
                                     <Link href="/auth/login" className="text-blue-600 hover:underline dark:text-blue-400">
-                                        {t('auth.haveAccount')}
+                                        {t('auth.login')}
                                     </Link>
                                 )}
                             </div>

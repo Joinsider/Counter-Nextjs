@@ -3,7 +3,7 @@
 
 import { useParams } from 'next/navigation';
 import { Counter } from "@/components/counter";
-import { AuthNav } from "@/components/authNav";
+import { AuthNav } from "@/components/auth/authNav";
 import { SideMenu } from "@/components/SideMenu";
 import React from "react";
 import SudoNav from "@/components/sudoNav";

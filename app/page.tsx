@@ -1,7 +1,7 @@
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/react";
 import React from "react";
-import { AuthNav } from "@/components/authNav";
+import { AuthNav } from "@/components/auth/authNav";
 import Main from "@/components/main";
 import Link from "next/link";
 import { ThemeSwitcher } from "@/components/themeSwitcher";

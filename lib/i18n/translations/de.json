@@ -28,10 +28,23 @@
     "title": "Titel",
     "add": "Zähler hinzufügen"
   },
+  "addLecturer": {
+    "name": "Dozentenname"
+  },
   "main": {
     "title": "Willkommen bei unserer Counter App!",
     "description": "Bitte melden Sie sich mit Ihrer i24 E-Mail-Addresse an.",
     "counterButton": "Zu den Zählern gehen"
+  },
+  "navigation": {
+    "quotes": "Zitate",
+    "lecturers": "Dozenten",
+    "lecturer": "Dozent",
+    "lecturerName": "Dozent Name",
+    "counter": "Zähler",
+    "viewCounters": "Alle Zähler",
+    "closeSideMenu": "Menü schließen",
+    "viewQuotes": "Alle Zitate"
   },
   "auth": {
     "login": "Anmelden",
@@ -62,10 +75,6 @@
     "passwordResetMailSentSuccess": "Passwort zurücksetzen E-Mail erfolgreich gesendet",
     "passwordResetMailSentError": "Passwort zurücksetzen E-Mail konnte nicht gesendet werden"
   },
-  "navigation": {
-    "viewCounters": "Alle Zähler",
-    "closeSideMenu": "Menü schließen"
-  },
   "chat": {
     "title": "Chat",
     "description": "Chat mit anderen Benutzern",
@@ -79,5 +88,15 @@
   "maintenance": {
     "title": "Wartungsmodus",
     "message": "Die Seite befindet sich derzeit in Wartung. Bitte versuchen Sie es später erneut."
+  },
+  "quotes": {
+    "quotesCount": "Zitate",
+    "addQuote": "Zitat hinzufügen",
+    "quoteText": "Zitattext",
+    "firstMentioned": "Erstmals erwähnt",
+    "firstMentionedOn": "Erstmals erwähnt am",
+    "quotesList": "Zitatliste",
+    "noQuotes": "Keine Zitate für diesen Dozenten gefunden",
+    "addLecturer": "Dozenten hinzufügen"
   }
 }

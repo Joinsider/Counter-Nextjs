@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 
 const ResetForm = dynamic(
-    () => import('@/components/resetForm'),
+    () => import('@/components/auth/resetForm'),
     { ssr: false }
 );
 

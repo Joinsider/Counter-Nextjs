@@ -7,6 +7,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import {checkSudoState} from "@/hooks/check-auth-state";
 
 export default function AddCounterForm() {
     const [formData, setFormData] = useState({
@@ -52,25 +53,21 @@ export default function AddCounterForm() {
     };
 
     useEffect(() => {
-        setIsLoggedIn(false);
+        // Move async logic inside a regular function
+        const checkAuth = async () => {
+            setIsLoggedIn(false);
 
-        const checkAuthState = async () => {
             try {
-                if (!pb.authStore.isValid) {
-                    router.replace('/auth/login');
-                } else if (!pb.authStore.model?.verified) {
-                    router.replace('/auth/verification');
-                } else if (!pb.authStore.model?.sudo) {
-                    router.replace('/counter/');
-                } else {
+                if (await checkSudoState()) {
                     setIsLoggedIn(true);
                 }
             } catch (error) {
-                console.error('Failed to check auth state:', error);
+                console.error('Auth check failed:', error);
             }
         };
 
-        checkAuthState();
+        // Call the async function
+        checkAuth();
     }, []);
 
     return (
