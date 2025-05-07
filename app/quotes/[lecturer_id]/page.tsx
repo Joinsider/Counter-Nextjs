@@ -156,18 +156,20 @@ export default function LecturerQuotesPage() {
                         {status === 'loading' && quotes.length === 0 ? (
                             <p>{t('common.loading')}</p>
                         ) : quotes.length > 0 ? (
-                            <ul className="space-y-4">
-                                {quotes.map((quote) => (
-                                    <li key={quote.id} className="p-4 border rounded">
-                                        <blockquote className="italic mb-2">"{quote.text}"</blockquote>
-                                        <div className="text-sm text-gray-500">
-                                            {t('quotes.firstMentionedOn')} {new Date(quote.first_mentioned).toLocaleDateString(currentLanguage)}
-                                        </div>
-                                    </li>
-                                ))}
-                            </ul>
+                            <div className="pb-16">
+                                <ul className="space-y-4">
+                                    {quotes.map((quote) => (
+                                        <li key={quote.id} className="p-4 border rounded">
+                                            <blockquote className="italic mb-2">"{quote.text}"</blockquote>
+                                            <div className="text-sm text-gray-500">
+                                                {t('quotes.firstMentionedOn')} {new Date(quote.first_mentioned).toLocaleDateString(currentLanguage)}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
                         ) : (
-                            <p className="text-gray-500">{t('quotes.noQuotes')}</p>
+                            <p className="text-gray-500 pb-16">{t('quotes.noQuotes')}</p>
                         )}
                     </div>
                 </div>
