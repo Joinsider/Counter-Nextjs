@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { LanguageSwitcher } from "./languageSwitcher";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 
 export default function Main() {

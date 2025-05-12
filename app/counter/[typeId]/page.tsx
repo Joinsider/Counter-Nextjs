@@ -8,7 +8,6 @@ import { SideMenu } from "@/components/SideMenu";
 import React from "react";
 import SudoNav from "@/components/sudoNav";
 import { Chat } from '@/components/Chat';
-import { LanguageSwitcher } from '@/components/languageSwitcher';
 
 export default function CounterPage() {
     const params = useParams();

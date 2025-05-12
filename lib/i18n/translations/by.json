@@ -1,0 +1,102 @@
+{
+  "common": {
+    "counter": "Zähla",
+    "add": "Dazua do",
+    "addCounter": "Zähla dazua",
+    "delete": "Löschn",
+    "edit": "bearbeitn",
+    "save": "speichan",
+    "cancel": "abbrechn",
+    "loading": "Werd gladn...",
+    "error": "Fehla",
+    "success": "Hod funktionierd",
+    "genericError": "Bissl wos is schiaf gloffa",
+    "appTitle": "Zähla Seitn",
+    "captchaError": "Sog dass du koa Roboter bisd"
+  },
+  "counter": {
+    "title": "Zähla",
+    "increment": "Hoch zähln",
+    "decrement": "Runter zähln",
+    "loginToEdit": "Anmeldn, um den Zähla zu bearbeitn",
+    "noCounters": "Koa Zähla gfundn",
+    "addCounter": "Zähler dazua",
+    "pastCountersTitle": "Oidara Zähla",
+    "pastCountersValue": "Wia vui"
+  },
+  "addCounter": {
+    "title": "Titl",
+    "add": "Zähla dazua"
+  },
+  "addLecturer": {
+    "name": "Dozentnnamn"
+  },
+  "main": {
+    "title": "Servus bei unsra Zähla Seitn!",
+    "description": "Meld di mit deina i24 E-Mail o",
+    "counterButton": "Zu de Zähla geh"
+  },
+  "navigation": {
+    "quotes": "Spruch",
+    "lecturers": "Dozentn",
+    "lecturer": "Da Dozent",
+    "lecturerName": "Dozentn namn",
+    "counter": "Zähla",
+    "viewCounters": "Olle Zähler",
+    "closeSideMenu": "Menü schliaßn",
+    "viewQuotes": "Olle Zitate"
+  },
+  "auth": {
+    "login": "Anmeldn",
+    "logout": "Abmeldn",
+    "loggingOut": "Obmeldung...",
+    "signup": "Konto erstelln",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "repeatPassword": "Passwort nomoi eigebn",
+    "username": "Benutzernamn",
+    "signIn": "Anmeldn",
+    "welcomeMessage": "Willkommen bei Counter App!",
+    "loggedInSuccess": "Sauba! Du bis ogmeld",
+    "accountCreatedSuccess": "Dei Konto is fertig",
+    "passwordRequirements": "Des Passwort muaß zwischn 8 und 70 Zeichn lang sei",
+    "emailRequirements": "De E-Mail muas a i24... Mail sei",
+    "captchaError": "Bitte bestätigen Sie das Captcha",
+    "somethingWentWrong": "Etwas ist schief gelaufen",
+    "forgotPassword": "Passwort vergessen?",
+    "notEnoughRights": "Sie haben nicht genügend Rechte",
+    "changeUsername": "Benutzernamn ändern",
+    "currentUsername": "Dei aktuelle Benutzernamn",
+    "newUsername": "Neia Benutzername",
+    "requestPasswordReset": "Password zrucksetzen anfordan",
+    "checkVerificationMail": "E-Mail werd überprüft",
+    "goBackToStartpage": "Zruck zur Startseitn",
+    "emailVerificationMailSent": "E-Mail is dir gschickt wordn",
+    "passwordResetMailSentSuccess": "Passwort zrucksetzen is dir gschickt wordn",
+    "passwordResetMailSentError": "Email konnt ned gschickt werdn"
+  },
+  "chat": {
+    "title": "Chat",
+    "description": "Chat mit andre Studentn",
+    "send": "Schickn",
+    "message": "Nochricht",
+    "noMessages": "Koane Nochricht gfundn",
+    "unknownUser": "Irgendoa Benutza",
+    "typeMessage": "Nochricht tippn...",
+    "emptyMessage": "Fehla: De Nochricht derf ned la sei"
+  },
+  "maintenance": {
+    "title": "Is grod weg",
+    "message": "De Seidn is grod weg. Kimm gfäligst spädda wida."
+  },
+  "quotes": {
+    "quotesCount": "Zitate",
+    "addQuote": "Zitat dazua doa",
+    "quoteText": "Zitattext",
+    "firstMentioned": "Erstes moi gsagt",
+    "firstMentionedOn": "Erstes moi gsagt am",
+    "quotesList": "Zitatliste",
+    "noQuotes": "Koa Zitat für den Dozentn gfundn",
+    "addLecturer": "Dozentn dazu doa"
+  }
+}

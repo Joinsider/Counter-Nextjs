@@ -1,5 +1,4 @@
 
-
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -7,7 +6,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   i18n: {
-    locales: ['en', 'de'],
+    locales: ['en', 'de', 'by'],
     defaultLocale: 'en',
     localeDetection: false
   },
