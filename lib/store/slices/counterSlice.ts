@@ -23,91 +23,119 @@ const initialState: CounterState = {
     id: '',
 };
 
-export const fetchCounter = createAsyncThunk(
-    'counter/fetchCounter',
-    async (typeId: string) => {
-        try {
-            const type = await pb.collection('counter_type').getOne(typeId);
-
-            const today = new Date().toISOString().split('T')[0];
-            const records = await pb.collection('counter').getList<Counter>(1, 1, {
-                filter: `date = "${today}" && type = "${typeId}"`,
-                expand: 'type'
-            });
-
-            if (records.items.length > 0) {
-                const counter = records.items[0];
-                return {
-                    value: counter.value,
-                    date: counter.date,
-                    typeId,
-                    title: type.title,
-                    id: counter.id
-                };
-            }
-
-            const newCounter = await pb.collection('counter').create<Counter>({
-                value: 0,
-                date: today,
-                type: typeId,
-            });
-
-            return {
-                value: newCounter.value,
-                date: newCounter.date,
-                typeId,
-                title: type.title,
-                id: newCounter.id
-            };
-        } catch (error) {
-            console.error('Error fetching counter:', error);
-            throw error;
+export const setId = createAsyncThunk(
+    'counter/setId',
+    async (id: string, {getState}) => {
+        const state = getState() as { counter: CounterState };
+        const {id: currentId} = state.counter;
+        if (currentId !== id) {
+            return id;
         }
-
+        return null;
     }
 );
+
+export const fetchCounter = createAsyncThunk(
+    'counter/fetchCounter',
+    async (typeID: string, {getState}) => {
+        try {
+            // Update the counter via the /api/counter/[id]/increment endpoint
+            const state = getState() as { counter: CounterState };
+            const uid = pb.authStore.model?.id;
+
+
+            const response = await fetch(`/api/counter/${typeID}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${pb.authStore.token}`,
+                },
+                body: JSON.stringify({
+                    typeId: typeID,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch counter state');
+            }
+            const data = await response.json();
+            return {
+                value: data.value,
+                date: format(new Date(), 'yyyy-MM-dd'),
+                typeId: typeID,
+                title: data.title,
+                id: data.id
+            };
+        } catch (error) {
+            console.error('Error incrementing counter on server:', error);
+            throw error;
+        }
+    }
+)
 
 export const incrementCounter = createAsyncThunk(
     'counter/increment',
-    async (typeId: string, {getState}) => {
+    async (typeID: string, {getState}) => {
         try {
-            const state = getState() as { counter: CounterState };
-            const {id} = state.counter;
+            const uid = pb.authStore.model?.id;
 
-            const updatedCounter = await pb.collection('counter').update<Counter>(id, {
-                value: state.counter.value + 1
+            const response = await fetch(`/api/counter/${typeID}/increment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${pb.authStore.token}`,
+                },
+                body: JSON.stringify({
+                    typeId: typeID,
+                    userId: uid
+                }),
             });
 
+            if (!response.ok) {
+                throw new Error('Failed to increment counter');
+            }
+            const data = await response.json();
             return {
-                value: updatedCounter.value
+                value: data.value
             };
         } catch (error) {
-            console.error('Error incrementing counter:', error);
+            console.error('Error incrementing counter on server:', error);
             throw error;
         }
     }
-);
+)
 
 export const decrementCounter = createAsyncThunk(
     'counter/decrement',
-    async (typeId: string, {getState}) => {
+    async (typeID: string, {getState}) => {
         try {
-            const state = getState() as { counter: CounterState };
-            const {id} = state.counter;
+            const uid = pb.authStore.model?.id;
 
-            const updatedCounter = await pb.collection('counter').update<Counter>(id, {
-                value: state.counter.value - 1
+            const response = await fetch(`/api/counter/${typeID}/decrement`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${pb.authStore.token}`,
+                },
+                body: JSON.stringify({
+                    typeId: typeID,
+                    userId: uid
+                }),
             });
 
+            if (!response.ok) {
+                throw new Error('Failed to decrement counter');
+            }
+            const data = await response.json();
             return {
-                value: updatedCounter.value
+                value: data.value
             };
         } catch (error) {
-            console.error('Error decrementing counter:', error);
+            console.error('Error incrementing counter on server:', error);
             throw error;
         }
     }
-);
+)
 
 const counterSlice = createSlice({
     name: 'counter',
@@ -136,8 +164,14 @@ const counterSlice = createSlice({
             })
             .addCase(decrementCounter.fulfilled, (state, action) => {
                 state.value = action.payload.value;
+            })
+            .addCase(setId.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.id = action.payload;
+                }
             });
-    },
+    }
 });
+
 
 export default counterSlice.reducer;

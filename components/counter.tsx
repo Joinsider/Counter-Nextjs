@@ -26,7 +26,7 @@ interface CounterProps {
 export function Counter({typeId = '3bqw5z4ht16sz75'}: CounterProps) {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const {value, date, title, isLoading, error} = useSelector((state: RootState) => state.counter);
+    const {value, date, title, isLoading, error, id} = useSelector((state: RootState) => state.counter);
     const {currentLanguage} = useSelector((state: RootState) => state.language);
     const [authChecked, setAuthChecked] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -57,7 +57,7 @@ export function Counter({typeId = '3bqw5z4ht16sz75'}: CounterProps) {
             if (!isSubscribed) return;
 
             // Subscribe to the counter collection
-            unsubscribe = await pb.collection('counter').subscribe('*', (e) => {
+            unsubscribe = await pb.collection('counter_event').subscribe('*', (e) => {
                 if (e.action === 'create' || e.action === 'update' || e.action === 'delete') {
                     console.log('Counter data changed:', e);
                     // Refresh counter data when changes occur

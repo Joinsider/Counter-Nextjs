@@ -1,32 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getCounter } from '@/lib/api/counter';
+import {NextResponse} from "next/server";
+import {Request} from "next/dist/compiled/@edge-runtime/primitives";
+import {checkBody, fetchCounterValue} from "@/hooks/fetchCounterValue";
 
-export const runtime = 'edge';
-
-export async function GET(
-    request: NextRequest,
+export async function POST(
+    request: Request,
     context: { params: { id: string } }
 ) {
     try {
         const id: string = context.params.id;
-        if (!id) {
+        const userToken = request.headers.get('Authorization')?.split(' ')[1];
+        console.log(userToken);
+
+        if (!userToken) {
             return NextResponse.json(
-                { error: 'Missing counter ID' },
+                { error: 'User Token is required' },
                 { status: 400 }
             );
         }
 
-        // Get the expand parameter from the URL
-        const { searchParams } = new URL(request.url);
-        let expandParams = searchParams.get('expand');
-        let expand = false;
+        let value = await fetchCounterValue(id, userToken);
 
-        if(expandParams === 'true') {
-            expand = true;
+        if(value <= 0) {
+            value = 0;
         }
 
-        const counter = await getCounter(id, expand);
-        return NextResponse.json(counter);
+        return NextResponse.json(
+            { value: value },
+            { status: 200 }
+        );
+
     } catch (error) {
         return NextResponse.json(
             { error: (error as Error).message },
