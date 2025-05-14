@@ -9,7 +9,6 @@ export async function POST(
     try {
         const id: string = context.params.id;
         const userToken = request.headers.get('Authorization')?.split(' ')[1];
-        console.log(userToken);
 
         if (!userToken) {
             return NextResponse.json(

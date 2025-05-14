@@ -11,6 +11,7 @@ interface CounterState {
     isLoading: boolean;
     error: string | null;
     id: string;
+    history: { date: string; value: number }[];
 }
 
 const initialState: CounterState = {
@@ -21,19 +22,8 @@ const initialState: CounterState = {
     isLoading: false,
     error: null,
     id: '',
+    history: []
 };
-
-export const setId = createAsyncThunk(
-    'counter/setId',
-    async (id: string, {getState}) => {
-        const state = getState() as { counter: CounterState };
-        const {id: currentId} = state.counter;
-        if (currentId !== id) {
-            return id;
-        }
-        return null;
-    }
-);
 
 export const fetchCounter = createAsyncThunk(
     'counter/fetchCounter',
@@ -137,6 +127,45 @@ export const decrementCounter = createAsyncThunk(
     }
 )
 
+export const fetchOldCounterValues = createAsyncThunk(
+    'counter/fetchOldCounterValues',
+    async ({typeID, month, year}: { typeID: string, month: number, year: number }, {getState}) => {
+        try {
+            const uid = pb.authStore.model?.id;
+
+            // Create start date (first day of selected month)
+            const startDate = new Date(year, month, 1);
+
+            // Create end date (last day of selected month)
+            const endDate = new Date(year, month + 1, 0);
+
+            const response = await fetch(`/api/counter/${typeID}/old`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${pb.authStore.token}`,
+                },
+                body: JSON.stringify({
+                    userId: uid,
+                    start: startDate.toISOString(),
+                    end: endDate.toISOString()
+                }),
+            });
+
+            const responseData = await response.json();
+            if (responseData.error) {
+                throw new Error(responseData.error);
+            } else if (!response.ok) {
+                throw new Error('Failed to fetch counter history');
+            }
+            return responseData;
+        } catch (e) {
+            console.error('Error fetching old counter values:', e);
+            throw e;
+        }
+    }
+)
+
 const counterSlice = createSlice({
     name: 'counter',
     initialState,
@@ -165,11 +194,21 @@ const counterSlice = createSlice({
             .addCase(decrementCounter.fulfilled, (state, action) => {
                 state.value = action.payload.value;
             })
-            .addCase(setId.fulfilled, (state, action) => {
-                if (action.payload) {
-                    state.id = action.payload;
-                }
-            });
+            .addCase(fetchOldCounterValues.pending, (state) => {
+                state.isLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchOldCounterValues.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.history = Object.entries(action.payload).map(([date, value]) => ({
+                    date,
+                    value: value as number
+                }));
+            })
+            .addCase(fetchOldCounterValues.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to fetch counter history';
+            })
     }
 });
 
