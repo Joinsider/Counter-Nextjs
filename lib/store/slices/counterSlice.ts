@@ -137,7 +137,7 @@ export const fetchOldCounterValues = createAsyncThunk(
             const startDate = new Date(year, month, 1);
 
             // Create end date (last day of selected month)
-            const endDate = new Date(year, month + 1, 0);
+            const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999);
 
             const response = await fetch(`/api/counter/${typeID}/old`, {
                 method: 'POST',
@@ -200,10 +200,17 @@ const counterSlice = createSlice({
             })
             .addCase(fetchOldCounterValues.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.history = Object.entries(action.payload).map(([date, value]) => ({
+
+                // Access the nested values object that contains the date-value pairs
+                const valuesObject = action.payload.values || {};
+
+                // Map the date-value pairs to the expected format
+                state.history = Object.entries(valuesObject).map(([date, value]) => ({
                     date,
                     value: value as number
                 }));
+
+                console.log('Fetched old counter values:', state.history);
             })
             .addCase(fetchOldCounterValues.rejected, (state, action) => {
                 state.isLoading = false;

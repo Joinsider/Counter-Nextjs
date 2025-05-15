@@ -72,6 +72,9 @@ export function PastCounters({typeId = '3bqw5z4ht16sz75'}: CounterProps) {
             });
         }
 
+        console.log("Counter Map", counterMap);
+        console.log("History: ", history);
+
         // Get the first day of the month
         const firstDay = new Date(currentYear, currentMonth, 1);
         const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
