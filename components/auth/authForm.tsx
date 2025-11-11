@@ -79,7 +79,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             if (mode === 'login') {
                 const res = await pb.collection('users').authWithPassword(formData.email, formData.password);
             } else {
-                const regex = /^i240(0[1-9]|[1-3][0-9])@hb\.dhbw-stuttgart\.de$/;
+                const regex = /^i2[0-9]{4}@hb\.dhbw-stuttgart\.de$/;
                 if (formData.password.length < 8 || formData.password.length > 70) {
                     setIsError(true);
                     const error = t('auth.passwordRequirements');
