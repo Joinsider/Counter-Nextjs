@@ -14,7 +14,7 @@ const ALLOWED_PATHS = [
 
 let consecutiveDbFailures = 0;
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const {pathname} = request.nextUrl;
 
     if (ALLOWED_PATHS.some(path => pathname.startsWith(path))) {

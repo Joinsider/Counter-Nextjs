@@ -1,3 +1,5 @@
+'use client';
+
 import { AuthNav } from "@/components/auth/authNav";
 import { SideMenu } from "@/components/SideMenu";
 import React from "react";

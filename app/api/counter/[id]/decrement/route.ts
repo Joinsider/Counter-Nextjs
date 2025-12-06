@@ -1,15 +1,14 @@
 import {decrementCounter} from "@/lib/api/counter";
-import {NextResponse} from "next/server";
-import {Request} from "next/dist/compiled/@edge-runtime/primitives";
+import {NextResponse, NextRequest} from "next/server";
 
 export const runtime = 'edge';
 
 export async function POST(
-    request: Request,
-    context: { params: { id: string } }
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const id: string = context.params.id;
+        const { id } = await params;
         if (!id) {
             return NextResponse.json(
                 { error: 'Missing counter ID' },
